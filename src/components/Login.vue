@@ -25,7 +25,7 @@
               </ul>
             </div>
             <div class="login-button">
-              <button type="button" class="login" id="login_btn"><i class="fa fa-key"></i>&nbsp;&nbsp;登录</button>
+              <button type="button" class="login" id="login_btn" @click="login()"><i class="fa fa-key"></i>&nbsp;&nbsp;登录</button>
               <div class="savepass">
                 <input type="checkbox" class="ace"><i class="lbl">保存密码</i>
               </div>
@@ -38,6 +38,8 @@
 </template>
 <script>
 import $ from 'jquery'
+import Axios from '../model/axios.js'
+import md5 from 'js-md5'
 export default {
   name: 'Login',
   data () {
@@ -82,6 +84,51 @@ export default {
       } else {
         $('#captcha_text').next().hide()
       }
+    },
+    login () {
+      var userName = this.$refs.username.value
+      var userpwd = this.$refs.userpwd.value
+      var captcha = this.$refs.captcha.value
+      var formPassword = md5(md5(userpwd) + 'a1b2c3d4')
+      console.log('按钮按下了')
+      if (userName === '') {
+        alert('用户名不能为空')
+      } else if (userpwd === '') {
+        alert('密码不能为空')
+      } else if (captcha === '') {
+        alert('验证码不为空')
+      } else {
+        var verifyUrl = 'http://localhost:8088/kaptcha/verify'
+        var loginUrl = 'http://localhost:8088/user/login'
+        Axios.post(verifyUrl, {
+          verifyCode: captcha
+        }).then((res) => {
+          if (res.data.code === 0) {
+            var result = res.data.data.result
+            if (result === 0) {
+              Axios.post(loginUrl, {
+                userName: userName,
+                password: formPassword
+              }).then((res) => {
+                if (res.data.code === 0) {
+                  alert('登录成功')
+                } else {
+                  alert('密码错误')
+                }
+              })
+            } else if (result === 1) {
+              alert('验证码错误')
+            } else if (result === 2) {
+              alert('验证码过期')
+            }
+          } else {
+            console.log('服务器出错')
+          }
+        }, (err) => {
+          console.log(err)
+        })
+      }
+      // this.refreshpic()
     }
   }
 }
