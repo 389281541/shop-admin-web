@@ -2,7 +2,7 @@
   <div class="login-style">
     <div class="login-container">
       <div class="logo">
-        <img src="../assets/images/logo.png" />
+        <img src="../../assets/images/logo.png"/>
       </div>
       <div class="body">
         <div class="widget-main">
@@ -10,14 +10,25 @@
             <i class="fa fa-coffee"></i>&nbsp;&nbsp;&nbsp;管理员登录</h4>
           <div class="content">
             <div class="login-logo">
-              <img src="../assets/images/login_bg.png" />
+              <img src="../../assets/images/login_bg.png"/>
             </div>
-            <div class="login-info">
+            <div class="login-info"
+                     :model="loginForm"
+                     :rules="loginRules"
+                     ref="loginForm">
               <ul class="items">
-                <li class="item"><label class="user_icon"></label><input name="username" data-name="用户名" type="text" id="username" ref="username" @blur="showUserName()" @focus="hideUserName()"/><i>用户名</i></li>
-                <li class="item"><label class="password_icon"></label><input name="userpwd" data-name="密码" type="password" id="userpwd" ref="userpwd" @blur="showPassword()" @focus="hidePassword()"/><i>密码</i></li>
+                <li class="item"><label class="user_icon"></label><input name="username" v-model="loginForm.username"
+                                                                         data-name="用户名" type="text" id="username"
+                                                                         @blur="showUserName()"
+                                                                         @focus="hideUserName()"/><i>用户名</i></li>
+                <li class="item"><label class="password_icon"></label><input name="userpwd" v-model="loginForm.password"
+                                                                             data-name="密码" type="password" id="userpwd"
+                                                                             @blur="showPassword()"
+                                                                             @focus="hidePassword()"/><i>密码</i></li>
                 <li class="item">
-                  <label class="captcha_icon"></label><input name="captcha_text" type="text"  data-name="验证码" id="captcha_text" ref="captcha" class="captcha_text" @blur="showCaptcha()" @focus="hideCaptcha()"/><i>验证码</i>
+                  <label class="captcha_icon"></label><input name="captcha_text" v-model="loginForm.captcha" type="text"
+                                                             data-name="验证码" id="captcha_text" class="captcha_text"
+                                                             @blur="showCaptcha()" @focus="hideCaptcha()"/><i>验证码</i>
                   <div class="captcha_region">
                     <img @click="refreshpic" :src="imgSrc" class="captcha_img"/>
                   </div>
@@ -25,7 +36,8 @@
               </ul>
             </div>
             <div class="login-button">
-              <button type="button" class="login" id="login_btn" @click="login()"><i class="fa fa-key"></i>&nbsp;&nbsp;登录</button>
+              <button type="button" class="login" id="login_btn" @click="handleLogin()"><i class="fa fa-key"></i>&nbsp;&nbsp;登录
+              </button>
               <div class="savepass">
                 <input type="checkbox" class="ace"><i class="lbl">保存密码</i>
               </div>
@@ -38,25 +50,70 @@
 </template>
 <script>
 import $ from 'jquery'
-import Axios from '../model/axios.js'
-import md5 from 'js-md5'
+import {getCaptcha, verifyCatcha} from '@/api/captcha'
+import {isvalidUsername} from '@/utils/validate'
+
 export default {
   name: 'Login',
   data () {
-    return {
-      imgSrc: 'http://localhost:8088/kaptcha/get'
+    const validateUsername = (rule, value, callback) => {
+      if (!isvalidUsername(value)) {
+        callback(new Error('请输入正确的用户名'))
+      } else {
+        callback()
+      }
     }
+    const validatePass = (rule, value, callback) => {
+      if (value.length === 0) {
+        callback(new Error('请输入密码'))
+      } else {
+        callback()
+      }
+    }
+    const validateCaptcha = (rule, value, callback) => {
+      if (value.length === 0) {
+        callback(new Error('请输入验证码'))
+      } else {
+        callback()
+      }
+    }
+    return {
+      imgSrc: '',
+      loginForm: {
+        username: '',
+        password: '',
+        captcha: ''
+      },
+      loginRules: {
+        username: [{required: true, trigger: 'blur', validator: validateUsername}],
+        password: [{required: true, trigger: 'blur', validator: validatePass}],
+        captcha: [{required: true, trigger: 'blur', validator: validateCaptcha}]
+      },
+      randomParam: {
+        sj: 12345
+      }
+
+    }
+  },
+  created () {
+    this.refreshpic()
   },
   methods: {
     refreshpic () {
-      var sj = Math.ceil(Math.random() * 100000)
-      this.imgSrc = 'http://localhost:8088/kaptcha/get?' + sj
+      let sj = Math.ceil(Math.random() * 100000)
+      this.randomParam.sj = sj
+      getCaptcha(this.randomParam).then(response => {
+        this.imgSrc = 'data:image/jpeg;base64,' + btoa(
+          new Uint8Array(response.data)
+            .reduce((data, byte) => data + String.fromCharCode(byte), '')
+        )
+      })
     },
     hideUserName () {
       $('#username').next().hide()
     },
     showUserName () {
-      var userName = this.$refs.username.value
+      let userName = this.username
       if (userName === '') {
         $('#username').next().show()
       } else {
@@ -67,7 +124,7 @@ export default {
       $('#userpwd').next().hide()
     },
     showPassword () {
-      var userpwd = this.$refs.userpwd.value
+      let userpwd = this.password
       if (userpwd === '') {
         $('#userpwd').next().show()
       } else {
@@ -78,57 +135,42 @@ export default {
       $('#captcha_text').next().hide()
     },
     showCaptcha () {
-      var captcha = this.$refs.captcha.value
+      let captcha = this.captcha
       if (captcha === '') {
         $('#captcha_text').next().show()
       } else {
         $('#captcha_text').next().hide()
       }
     },
-    login () {
-      var userName = this.$refs.username.value
-      var userpwd = this.$refs.userpwd.value
-      var captcha = this.$refs.captcha.value
-      var formPassword = md5(md5(userpwd) + 'a1b2c3d4')
-      console.log('按钮按下了')
-      if (userName === '') {
-        alert('用户名不能为空')
-      } else if (userpwd === '') {
-        alert('密码不能为空')
-      } else if (captcha === '') {
-        alert('验证码不为空')
-      } else {
-        var verifyUrl = 'http://localhost:8088/kaptcha/verify'
-        var loginUrl = 'http://localhost:8088/user/login'
-        Axios.post(verifyUrl, {
-          verifyCode: captcha
-        }).then((res) => {
-          if (res.data.code === 0) {
-            var result = res.data.data.result
+    handleLogin () {
+      let flag = false
+      this.$refs.loginForm.validate(valid => {
+        if (valid) {
+          verifyCatcha(this.loginForm.captcha).then(response => {
+            let result = response.data.data.result
             if (result === 0) {
-              Axios.post(loginUrl, {
-                userName: userName,
-                password: formPassword
-              }).then((res) => {
-                if (res.data.code === 0) {
-                  alert('登录成功')
-                } else {
-                  alert('密码错误')
-                }
-              })
+              flag = true
             } else if (result === 1) {
-              alert('验证码错误')
+              this.$message({
+                message: '验证码错误',
+                type: 'warning',
+                duration: 1000
+              })
             } else if (result === 2) {
-              alert('验证码过期')
+              // callback(new Error('验证码过期'))
+              // return;
+              this.$message({
+                message: '验证码过期',
+                type: 'warning',
+                duration: 1000
+              })
             }
-          } else {
-            console.log('服务器出错')
+          })
+          if (flag) {
+            this.$store.dispatch('Login', this.loginForm)
           }
-        }, (err) => {
-          console.log(err)
-        })
-      }
-      // this.refreshpic()
+        }
+      })
     }
   }
 }
@@ -140,23 +182,26 @@ export default {
     display: block;
     box-sizing: border-box;
   }
+
   .login-style {
     width: 100%;
     height: 730px;
     background-color: #1c77ac;
-    background-image: url(../assets/images/light.png);
+    background-image: url(../../assets/images/light.png);
     background-repeat: no-repeat;
     background-position: center top;
     position: relative;
   }
+
   .login-container {
     width: 100%;
     height: 585px;
     position: absolute;
     top: 47px;
-    background-image: url(../assets/images/loginbg3.png);
+    background-image: url(../../assets/images/loginbg3.png);
     background-repeat: no-repeat;
   }
+
   .logo {
     width: 650px;
     margin: 50px auto 20px;
@@ -164,9 +209,11 @@ export default {
     /*margin-bottom: 20px;*/
     text-align: center;
   }
+
   .logo img {
     margin: 0 auto;
   }
+
   .body {
     width: 650px;
     height: 330px;
@@ -174,11 +221,13 @@ export default {
     padding: 6px;
     background-color: #1C77AC;
   }
+
   .widget-main {
     padding: 16px 20px 20px;
     background: #f7f7f7;
-    height:318px;
+    height: 318px;
   }
+
   .header {
     border-bottom-color: #d5e3ef;
     line-height: 28px;
@@ -186,8 +235,9 @@ export default {
     padding-bottom: 4px;
     border-bottom: 1px solid #CCC;
     font-size: 19px;
-    color: #478fca!important;
+    color: #478fca !important;
   }
+
   .fa {
     display: inline-block;
     font: normal normal normal 14px/1 FontAwesome;
@@ -201,10 +251,12 @@ export default {
     width: 180px;
     margin-top: 20px;
   }
+
   .login-info {
     width: 268px;
     float: left;
   }
+
   ul {
     display: block;
     list-style-type: disc;
@@ -214,6 +266,7 @@ export default {
     margin-inline-end: 0px;
     padding-inline-start: 40px;
   }
+
   ul .item {
     position: relative;
     height: 40px;
@@ -222,6 +275,7 @@ export default {
     line-height: 40px;
     width: 250px;
   }
+
   ul input {
     height: 40px;
     /*padding: 5px 10px;*/
@@ -234,6 +288,7 @@ export default {
     background: 0 none;
     text-rendering: auto;
   }
+
   ul li i {
     position: absolute;
     left: 60px;
@@ -242,26 +297,32 @@ export default {
     font-size: 16px;
     z-index: 10;
   }
+
   label {
-    background: url(../assets/images/icon_login.png) no-repeat;
+    background: url(../../assets/images/icon_login.png) no-repeat;
     float: left;
     width: 40px;
     margin-top: 2px;
     height: 35px;
     border-right: 1px solid #ddd;
   }
+
   .password_icon {
     background-position: -5px 0px;
   }
+
   .user_icon {
     background-position: -5px -30px;
   }
+
   .captcha_icon {
     background-position: -5px -60px;
   }
+
   #captcha_text {
     width: 128px;
   }
+
   .captcha_region {
     position: absolute;
     height: 40px;
@@ -270,11 +331,13 @@ export default {
     right: 0px;
     top: 0px;
   }
+
   .captcha_region .captcha_img {
     width: 80px;
     height: 38px;
     margin: 0 auto;
   }
+
   .login-button {
     width: 130px;
     float: right;
@@ -282,6 +345,7 @@ export default {
     color: #666;
     position: relative;
   }
+
   .login-button .login {
     width: 80px;
     color: #FFF;
@@ -299,12 +363,14 @@ export default {
     white-space: nowrap;
     vertical-align: middle;
   }
+
   .login-button savepass {
     display: inline-block;
     position: relative;
     line-height: 16px;
     text-align: center;
   }
+
   .login-button input {
     position: absolute;
     width: 16px;
@@ -313,7 +379,8 @@ export default {
     margin-right: 5px;
     border: initial;
   }
-  .login-button  .lbl {
+
+  .login-button .lbl {
     position: relative;
     display: inline-block;
     line-height: 16px;
