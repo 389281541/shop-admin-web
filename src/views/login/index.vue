@@ -12,29 +12,36 @@
             <div class="login-logo">
               <img src="../../assets/images/login_bg.png"/>
             </div>
-            <div class="login-info"
+            <el-form class="login-info items"
                      :model="loginForm"
                      :rules="loginRules"
                      ref="loginForm">
-              <ul class="items">
-                <li class="item"><label class="user_icon"></label><input name="username" v-model="loginForm.username"
-                                                                         data-name="用户名" type="text" id="username"
-                                                                         @blur="showUserName()"
-                                                                         @focus="hideUserName()"/><i>用户名</i></li>
-                <li class="item"><label class="password_icon"></label><input name="userpwd" v-model="loginForm.password"
-                                                                             data-name="密码" type="password" id="userpwd"
-                                                                             @blur="showPassword()"
-                                                                             @focus="hidePassword()"/><i>密码</i></li>
-                <li class="item">
-                  <label class="captcha_icon"></label><input name="captcha_text" v-model="loginForm.captcha" type="text"
-                                                             data-name="验证码" id="captcha_text" class="captcha_text"
-                                                             @blur="showCaptcha()" @focus="hideCaptcha()"/><i>验证码</i>
+<!--              <ul class="items">-->
+                <el-form-item class="item">
+                  <label class="user_icon"></label>
+                  <input name="username" v-model="loginForm.username"
+                                         data-name="用户名" type="text" id="username"
+                                         @blur="showUserName()"
+                                         @focus="hideUserName()"/><i>用户名</i>
+                </el-form-item>
+                <el-form-item class="item">
+                  <label class="password_icon"></label>
+                  <input name="userpwd" v-model="loginForm.password"
+                                         data-name="密码" type="password" id="userpwd"
+                                         @blur="showPassword()"
+                                         @focus="hidePassword()"/><i>密码</i>
+                </el-form-item>
+                <el-form-item class="item">
+                  <label class="captcha_icon"></label>
+                  <input name="captcha_text" v-model="loginForm.captcha" type="text"
+                                             data-name="验证码" id="captcha_text" class="captcha_text"
+                                             @blur="showCaptcha()" @focus="hideCaptcha()"/><i>验证码</i>
                   <div class="captcha_region">
                     <img @click="refreshpic" :src="imgSrc" class="captcha_img"/>
                   </div>
-                </li>
-              </ul>
-            </div>
+                </el-form-item>
+<!--              </ul>-->
+            </el-form>
             <div class="login-button">
               <button type="button" class="login" id="login_btn" @click="handleLogin()"><i class="fa fa-key"></i>&nbsp;&nbsp;登录
               </button>
@@ -88,9 +95,6 @@ export default {
         username: [{required: true, trigger: 'blur', validator: validateUsername}],
         password: [{required: true, trigger: 'blur', validator: validatePass}],
         captcha: [{required: true, trigger: 'blur', validator: validateCaptcha}]
-      },
-      randomParam: {
-        sj: 12345
       }
 
     }
@@ -101,19 +105,13 @@ export default {
   methods: {
     refreshpic () {
       let sj = Math.ceil(Math.random() * 100000)
-      this.randomParam.sj = sj
-      getCaptcha(this.randomParam).then(response => {
-        this.imgSrc = 'data:image/jpeg;base64,' + btoa(
-          new Uint8Array(response.data)
-            .reduce((data, byte) => data + String.fromCharCode(byte), '')
-        )
-      })
+      this.imgSrc = getCaptcha(sj)
     },
     hideUserName () {
       $('#username').next().hide()
     },
     showUserName () {
-      let userName = this.username
+      let userName = this.loginForm.username
       if (userName === '') {
         $('#username').next().show()
       } else {
@@ -124,7 +122,7 @@ export default {
       $('#userpwd').next().hide()
     },
     showPassword () {
-      let userpwd = this.password
+      let userpwd = this.loginForm.password
       if (userpwd === '') {
         $('#userpwd').next().show()
       } else {
@@ -135,7 +133,7 @@ export default {
       $('#captcha_text').next().hide()
     },
     showCaptcha () {
-      let captcha = this.captcha
+      let captcha = this.loginForm.captcha
       if (captcha === '') {
         $('#captcha_text').next().show()
       } else {
@@ -147,7 +145,8 @@ export default {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
           verifyCatcha(this.loginForm.captcha).then(response => {
-            let result = response.data.data.result
+            let result = response.data.id
+            console.log('result=' + result)
             if (result === 0) {
               flag = true
             } else if (result === 1) {
@@ -167,6 +166,7 @@ export default {
             }
           })
           if (flag) {
+            console.log('into flag')
             this.$store.dispatch('Login', this.loginForm)
           }
         }
@@ -256,8 +256,7 @@ export default {
     width: 268px;
     float: left;
   }
-
-  ul {
+  .items {
     display: block;
     list-style-type: disc;
     margin-block-start: 1em;
@@ -267,7 +266,7 @@ export default {
     padding-inline-start: 40px;
   }
 
-  ul .item {
+  .login-info .item {
     position: relative;
     height: 40px;
     margin-bottom: 15px;
@@ -276,7 +275,7 @@ export default {
     width: 250px;
   }
 
-  ul input {
+  .login-info input {
     height: 40px;
     /*padding: 5px 10px;*/
     border: 0px;
@@ -289,7 +288,7 @@ export default {
     text-rendering: auto;
   }
 
-  ul li i {
+  .login-info .item i {
     position: absolute;
     left: 60px;
     top: 0px;
