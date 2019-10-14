@@ -16,7 +16,6 @@
                      :model="loginForm"
                      :rules="loginRules"
                      ref="loginForm">
-<!--              <ul class="items">-->
                 <el-form-item class="item">
                   <label class="user_icon"></label>
                   <input name="username" v-model="loginForm.username"
@@ -26,7 +25,7 @@
                 </el-form-item>
                 <el-form-item class="item">
                   <label class="password_icon"></label>
-                  <input name="userpwd" v-model="loginForm.password"
+                  <input name="usrpwd" v-model="loginForm.password"
                                          data-name="密码" type="password" id="userpwd"
                                          @blur="showPassword()"
                                          @focus="hidePassword()"/><i>密码</i>
@@ -40,7 +39,6 @@
                     <img @click="refreshpic" :src="imgSrc" class="captcha_img"/>
                   </div>
                 </el-form-item>
-<!--              </ul>-->
             </el-form>
             <div class="login-button">
               <button type="button" class="login" id="login_btn" @click="handleLogin()"><i class="fa fa-key"></i>&nbsp;&nbsp;登录
@@ -59,7 +57,7 @@
 import $ from 'jquery'
 import {getCaptcha, verifyCatcha} from '@/api/captcha'
 import {isvalidUsername} from '@/utils/validate'
-
+import Message from 'element-ui'
 export default {
   name: 'Login',
   data () {
@@ -122,8 +120,8 @@ export default {
       $('#userpwd').next().hide()
     },
     showPassword () {
-      let userpwd = this.loginForm.password
-      if (userpwd === '') {
+      let userPassword = this.loginForm.password
+      if (userPassword === '') {
         $('#userpwd').next().show()
       } else {
         $('#userpwd').next().hide()
@@ -150,7 +148,7 @@ export default {
             if (result === 0) {
               flag = true
             } else if (result === 1) {
-              this.$message({
+              Message({
                 message: '验证码错误',
                 type: 'warning',
                 duration: 1000
@@ -158,7 +156,7 @@ export default {
             } else if (result === 2) {
               // callback(new Error('验证码过期'))
               // return;
-              this.$message({
+              Message({
                 message: '验证码过期',
                 type: 'warning',
                 duration: 1000
