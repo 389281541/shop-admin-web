@@ -14,27 +14,40 @@
             </div>
             <el-form class="login-info items"
                      :model="loginForm"
-                     :rules="loginRules"
                      ref="loginForm">
-                <el-form-item class="item">
-                  <label class="user_icon"></label>
-                  <input name="username" v-model="loginForm.username"
-                                         data-name="用户名" type="text" id="username"
-                                         @blur="showUserName()"
-                                         @focus="hideUserName()"/><i>用户名</i>
+                <el-form-item class="item" prop="username">
+<!--                  <label class="user_icon"></label>-->
+                  <el-input name="username"
+                            type="text"
+                            v-model="loginForm.username"
+                            autoComplete="on"
+                            placeholder="请输入用户名">
+                      <span slot="prefix">
+                        <svg-icon icon-class="user" class="color-main"></svg-icon>
+                      </span>
+                  </el-input>
                 </el-form-item>
-                <el-form-item class="item">
-                  <label class="password_icon"></label>
-                  <input name="usrpwd" v-model="loginForm.password"
-                                         data-name="密码" type="password" id="userpwd"
-                                         @blur="showPassword()"
-                                         @focus="hidePassword()"/><i>密码</i>
+                <el-form-item class="item" prop="password">
+<!--                  <label class="password_icon"></label>-->
+                  <el-input name="password"
+                            :type="pwdType"
+                            @keyup.enter.native="handleLogin"
+                            v-model="loginForm.password"
+                            autoComplete="on"
+                            placeholder="请输入密码">
+                     <span slot="prefix">
+                        <svg-icon icon-class="password" class="color-main"></svg-icon>
+                      </span>
+                  </el-input>
                 </el-form-item>
-                <el-form-item class="item">
-                  <label class="captcha_icon"></label>
-                  <input name="captcha_text" v-model="loginForm.captcha" type="text"
-                                             data-name="验证码" id="captcha_text" class="captcha_text"
-                                             @blur="showCaptcha()" @focus="hideCaptcha()"/><i>验证码</i>
+                <el-form-item class="item" prop="captcha">
+<!--                  <label class="captcha_icon"></label>-->
+<!--                  <input name="captcha_text" v-model="loginForm.captcha" type="text"/>-->
+                  <el-input class="captcha_text"
+                            v-model="loginForm.captcha"
+                            autoComplete="on"
+                            placeholder="验证码">
+                  </el-input>
                   <div class="captcha_region">
                     <img @click="refreshpic" :src="imgSrc" class="captcha_img"/>
                   </div>
@@ -54,34 +67,11 @@
   </div>
 </template>
 <script>
-import $ from 'jquery'
 import {getCaptcha, verifyCatcha} from '@/api/captcha'
-import {isvalidUsername} from '@/utils/validate'
-import Message from 'element-ui'
+import ElementUI from 'element-ui'
 export default {
   name: 'Login',
   data () {
-    const validateUsername = (rule, value, callback) => {
-      if (!isvalidUsername(value)) {
-        callback(new Error('请输入正确的用户名'))
-      } else {
-        callback()
-      }
-    }
-    const validatePass = (rule, value, callback) => {
-      if (value.length === 0) {
-        callback(new Error('请输入密码'))
-      } else {
-        callback()
-      }
-    }
-    const validateCaptcha = (rule, value, callback) => {
-      if (value.length === 0) {
-        callback(new Error('请输入验证码'))
-      } else {
-        callback()
-      }
-    }
     return {
       imgSrc: '',
       loginForm: {
@@ -89,11 +79,7 @@ export default {
         password: '',
         captcha: ''
       },
-      loginRules: {
-        username: [{required: true, trigger: 'blur', validator: validateUsername}],
-        password: [{required: true, trigger: 'blur', validator: validatePass}],
-        captcha: [{required: true, trigger: 'blur', validator: validateCaptcha}]
-      }
+      pwdType: 'password'
 
     }
   },
@@ -105,68 +91,31 @@ export default {
       let sj = Math.ceil(Math.random() * 100000)
       this.imgSrc = getCaptcha(sj)
     },
-    hideUserName () {
-      $('#username').next().hide()
-    },
-    showUserName () {
-      let userName = this.loginForm.username
-      if (userName === '') {
-        $('#username').next().show()
-      } else {
-        $('#username').next().hide()
-      }
-    },
-    hidePassword () {
-      $('#userpwd').next().hide()
-    },
-    showPassword () {
-      let userPassword = this.loginForm.password
-      if (userPassword === '') {
-        $('#userpwd').next().show()
-      } else {
-        $('#userpwd').next().hide()
-      }
-    },
-    hideCaptcha () {
-      $('#captcha_text').next().hide()
-    },
-    showCaptcha () {
-      let captcha = this.loginForm.captcha
-      if (captcha === '') {
-        $('#captcha_text').next().show()
-      } else {
-        $('#captcha_text').next().hide()
-      }
-    },
     handleLogin () {
-      let flag = false
       this.$refs.loginForm.validate(valid => {
         if (valid) {
           verifyCatcha(this.loginForm.captcha).then(response => {
             let result = response.data.id
             console.log('result=' + result)
             if (result === 0) {
-              flag = true
+              console.log('dispatch')
+              this.$store.dispatch('Login', this.loginForm)
             } else if (result === 1) {
-              Message({
+              ElementUI.Message({
                 message: '验证码错误',
                 type: 'warning',
                 duration: 1000
               })
+              this.refreshpic()
             } else if (result === 2) {
-              // callback(new Error('验证码过期'))
-              // return;
-              Message({
+              ElementUI.Message({
                 message: '验证码过期',
                 type: 'warning',
                 duration: 1000
               })
+              this.refreshpic()
             }
           })
-          if (flag) {
-            console.log('into flag')
-            this.$store.dispatch('Login', this.loginForm)
-          }
         }
       })
     }
@@ -254,6 +203,7 @@ export default {
     width: 268px;
     float: left;
   }
+
   .items {
     display: block;
     list-style-type: disc;
@@ -273,10 +223,10 @@ export default {
     width: 250px;
   }
 
-  .login-info input {
+  .login-info el-input {
+    position: relative;
     height: 40px;
     /*padding: 5px 10px;*/
-    border: 0px;
     line-height: 30px;
     width: 208px;
     font-size: 14px;
@@ -284,15 +234,8 @@ export default {
     position: relative;
     background: 0 none;
     text-rendering: auto;
-  }
-
-  .login-info .item i {
-    position: absolute;
-    left: 60px;
-    top: 0px;
-    color: #999;
-    font-size: 16px;
-    z-index: 10;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
   }
 
   label {
@@ -316,8 +259,8 @@ export default {
     background-position: -5px -60px;
   }
 
-  #captcha_text {
-    width: 128px;
+  .captcha_text {
+    width: 168px;
   }
 
   .captcha_region {
@@ -384,5 +327,8 @@ export default {
     font-weight: normal;
     font-style: normal;
     margin-left: 20px;
+  }
+  .color-main {
+    color: #409EFF;
   }
 </style>
