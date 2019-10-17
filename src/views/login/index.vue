@@ -218,7 +218,7 @@ export default {
     position: relative;
     height: 40px;
     margin-bottom: 15px;
-    border: 1px solid #ddd;
+    /*border: 1px solid #ddd;*/
     line-height: 40px;
     width: 250px;
   }
@@ -235,7 +235,7 @@ export default {
     background: 0 none;
     text-rendering: auto;
     margin-bottom: 15px;
-    border: 1px solid #ddd;
+    /*border: 1px solid #ddd;*/
   }
 
   label {
@@ -247,17 +247,15 @@ export default {
     border-right: 1px solid #ddd;
   }
 
-  .password_icon {
-    background-position: -5px 0px;
-  }
-
-  .user_icon {
-    background-position: -5px -30px;
-  }
-
-  .captcha_icon {
-    background-position: -5px -60px;
-  }
+  /*.password_icon {*/
+  /*  background-position: -5px 0px;*/
+  /*}*/
+  /*.user_icon {*/
+  /*  background-position: -5px -30px;*/
+  /*}*/
+  /*.captcha_icon {*/
+  /*  background-position: -5px -60px;*/
+  /*}*/
 
   .captcha_text {
     width: 168px;
