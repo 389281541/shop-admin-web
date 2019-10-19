@@ -327,6 +327,8 @@ export default {
     margin-left: 20px;
   }
   .color-main {
-    color: #409EFF;
+    color: #1c77ac;
+    margin: 10px auto;
+    /*font-size: 16px;*/
   }
 </style>
