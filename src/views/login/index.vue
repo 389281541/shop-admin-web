@@ -2,7 +2,7 @@
   <div class="login-style">
     <div class="login-container">
       <div class="logo">
-        <img src="../../assets/images/logo.png"/>
+        <img src="@/assets/images/logo.png"/>
       </div>
       <div class="body">
         <div class="widget-main">
@@ -10,25 +10,23 @@
             <i class="fa fa-coffee"></i>&nbsp;&nbsp;&nbsp;管理员登录</h4>
           <div class="content">
             <div class="login-logo">
-              <img src="../../assets/images/login_bg.png"/>
+              <img src="@/assets/images/login_bg.png"/>
             </div>
             <el-form class="login-info items"
                      :model="loginForm"
                      ref="loginForm">
                 <el-form-item class="item" prop="username">
-<!--                  <label class="user_icon"></label>-->
                   <el-input name="username"
                             type="text"
                             v-model="loginForm.username"
                             autoComplete="on"
                             placeholder="请输入用户名">
                       <span slot="prefix">
-                        <svg-icon icon-class="user" class="color-main"></svg-icon>
+                        <svg-icon icon-class="user" class="color-main size-fix"></svg-icon>
                       </span>
                   </el-input>
                 </el-form-item>
                 <el-form-item class="item" prop="password">
-<!--                  <label class="password_icon"></label>-->
                   <el-input name="password"
                             :type="pwdType"
                             @keyup.enter.native="handleLogin"
@@ -41,10 +39,8 @@
                   </el-input>
                 </el-form-item>
                 <el-form-item class="item" prop="captcha">
-<!--                  <label class="captcha_icon"></label>-->
-<!--                  <input name="captcha_text" v-model="loginForm.captcha" type="text"/>-->
                   <el-input class="captcha_text"
-                            v-model="loginForm.captcha"
+                            v-model="captcha"
                             autoComplete="on"
                             placeholder="验证码">
                   </el-input>
@@ -75,10 +71,10 @@ export default {
     return {
       imgSrc: '',
       loginForm: {
-        username: '',
-        password: '',
-        captcha: ''
+        username: 'admin',
+        password: 'admin'
       },
+      captcha: '',
       pwdType: 'password'
 
     }
@@ -94,12 +90,14 @@ export default {
     handleLogin () {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
-          verifyCatcha(this.loginForm.captcha).then(response => {
+          verifyCatcha(this.captcha).then(response => {
             let result = response.data.id
             console.log('result=' + result)
             if (result === 0) {
               console.log('dispatch')
-              this.$store.dispatch('Login', this.loginForm)
+              this.$store.dispatch('Login', this.loginForm).then(() => {
+                this.$router.push({path: '/'})
+              })
             } else if (result === 1) {
               ElementUI.Message({
                 message: '验证码错误',
@@ -247,16 +245,6 @@ export default {
     border-right: 1px solid #ddd;
   }
 
-  /*.password_icon {*/
-  /*  background-position: -5px 0px;*/
-  /*}*/
-  /*.user_icon {*/
-  /*  background-position: -5px -30px;*/
-  /*}*/
-  /*.captcha_icon {*/
-  /*  background-position: -5px -60px;*/
-  /*}*/
-
   .captcha_text {
     width: 168px;
   }
@@ -329,6 +317,9 @@ export default {
   .color-main {
     color: #1c77ac;
     margin: 10px auto;
-    /*font-size: 16px;*/
+  }
+  .size-fix {
+    font-size: 18px;
+    margin: 10px -1px;
   }
 </style>

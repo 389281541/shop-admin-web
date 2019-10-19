@@ -26,11 +26,11 @@ const user = {
 
   actions: {
     // 登录
-    Login ({ commit }, userInfo) {
-      const username = userInfo.username.trim()
-      const password = md5(md5(userInfo.password.trim()) + 'a1b2c3d4')
+    Login ({ commit }, loginForm) {
+      const userName = loginForm.username.trim()
+      const passWord = md5(md5(loginForm.password.trim()) + 'a1b2c3d4')
       return new Promise((resolve, reject) => {
-        login(username, password).then(response => {
+        login(userName, passWord).then(response => {
           const data = response.data
           const tokenStr = data.token
           setToken(tokenStr)
