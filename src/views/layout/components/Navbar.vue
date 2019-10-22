@@ -28,7 +28,6 @@ export default {
   components: Breadcrumb,
   computed: {
     ...mapGetters([
-      'sidebar',
       'avatar'
     ])
   },
