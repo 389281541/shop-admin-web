@@ -64,7 +64,7 @@
 </template>
 <script>
 import {getCaptcha, verifyCatcha} from '@/api/captcha'
-import ElementUI from 'element-ui'
+import { Message } from 'element-ui'
 export default {
   name: 'Login',
   data () {
@@ -75,7 +75,8 @@ export default {
         password: 'admin'
       },
       captcha: '',
-      pwdType: 'password'
+      pwdType: 'password',
+      authToken: ''
 
     }
   },
@@ -88,33 +89,34 @@ export default {
       this.imgSrc = getCaptcha(sj)
     },
     handleLogin () {
-      this.$refs.loginForm.validate(valid => {
-        if (valid) {
-          verifyCatcha(this.captcha).then(response => {
-            let result = response.data.id
-            console.log('result=' + result)
-            if (result === 0) {
-              console.log('dispatch')
-              this.$store.dispatch('Login', this.loginForm).then(() => {
-                this.$router.push({path: '/'})
-              })
-            } else if (result === 1) {
-              ElementUI.Message({
-                message: '验证码错误',
-                type: 'warning',
-                duration: 1000
-              })
-              this.refreshpic()
-            } else if (result === 2) {
-              ElementUI.Message({
-                message: '验证码过期',
-                type: 'warning',
-                duration: 1000
-              })
-              this.refreshpic()
-            }
+      verifyCatcha(this.captcha).then(response => {
+        let result = response.data.id
+        this.authToken = response.data.token
+        console.log('result=' + result)
+        if (result === 0) {
+          console.log('dispatch')
+          this.$store.dispatch('Login', this.loginForm).then(() => {
+            this.$router.push({path: '/home'})
+          }).catch(() => {
+            this.refreshpic()
           })
+        } else if (result === 1) {
+          Message({
+            message: '验证码错误',
+            type: 'warning',
+            duration: 1000
+          })
+          this.refreshpic()
+        } else if (result === 2) {
+          Message({
+            message: '验证码过期',
+            type: 'warning',
+            duration: 1000
+          })
+          this.refreshpic()
         }
+      }).catch(() => {
+        this.refreshpic()
       })
     }
   }
