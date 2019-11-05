@@ -25,7 +25,9 @@ import { mapGetters } from 'vuex'
 import Breadcrumb from '@/components/Breadcrumb'
 
 export default {
-  components: Breadcrumb,
+  components: {
+    Breadcrumb
+  },
   computed: {
     ...mapGetters([
       'avatar'
