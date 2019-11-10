@@ -1,0 +1,123 @@
+<template>
+  <el-card class="form-container" shadow="never">
+    <el-form :model="productItem"
+             :rules="rules"
+             ref="productItemForm"
+             label-width="150px">
+      <el-form-item label="分类名称：" prop="name">
+        <el-input v-model="productItem.name"></el-input>
+      </el-form-item>
+      <el-form-item label="上级分类：">
+        <el-select v-model="productItem.parentId" placeholder="请选择分类">
+          <el-option
+          v-for="item in parentItemList"
+          :key="item.id"
+          :label="item.name"
+          :value="item.id">
+          </el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item label="排序：">
+        <el-input v-model="productItem.sortId"></el-input>
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" @click="onSubmit('productItemForm')">提交</el-button>
+      </el-form-item>
+    </el-form>
+  </el-card>
+</template>
+
+<script>
+import {fetchList, createItem, updateItem, getItem} from '@/api/item'
+const defaultProductItem = {
+  id: null,
+  name: '',
+  parentId: null,
+  sortId: 0
+}
+export default {
+  name: 'ItemDetail',
+  props: {
+    isEdit: {
+      type: Boolean,
+      default: false
+    }
+  },
+  data () {
+    return {
+      id: null,
+      productItem: Object.assign({}, defaultProductItem),
+      parentItemList: [],
+      rules: {
+        name: [
+          {required: true, message: '请输入类别名称', trigger: 'blur'},
+          {min: 2, max: 140, message: '长度在 2 到 140 个字符', trigger: 'blur'}
+        ],
+        sortId: {required: true, message: '请输入类别序号', trigger: 'blur'}
+      }
+    }
+  },
+  created () {
+    if (this.isEdit) {
+      getItem(this.$router.query.id).then(response => {
+        this.productItem = response.data
+      })
+    } else {
+      this.productItem = Object.assign({}, defaultProductItem)
+    }
+    this.getParentItemList()
+  },
+  methods: {
+    getParentItemList () {
+      fetchList({id: null, pageNum: 1, pageSize: 200}).then(response => {
+        this.parentItemList = response.data.records
+        this.parentItemList.unshift({id: null, name: '无上级分类'})
+      })
+    },
+    onSubmit (formName) {
+      this.refs[formName].valid((valid) => {
+        if (valid) {
+          this.$confirm('是否提交数据', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(() => {
+            if (this.isEdit) {
+              this.productItem.id = this.$route.query.id
+              updateItem(this.productItem).then(response => {
+                this.$message({
+                  message: '修改成功',
+                  type: 'success',
+                  duration: 1000
+                })
+                this.$router.back()
+              })
+            } else {
+              createItem(this.productItem).then(response => {
+                this.$refs[formName].resetFields()
+                this.resetForm(formName)
+                this.$message({
+                  message: '提交成功',
+                  type: 'success',
+                  duration: 1000
+                })
+              })
+            }
+          })
+        } else {
+          this.$message({
+            message: '验证失败',
+            type: 'error',
+            duration: 1000
+          })
+        }
+      })
+    },
+    resetForm (formName) {
+      this.$refs[formName].resetFields()
+      this.productItem = Object.assign({}, defaultProductItem)
+      this.getParentItemList()
+    }
+  }
+}
+</script>
