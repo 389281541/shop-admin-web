@@ -128,6 +128,7 @@ export default {
       this.getList()
     },
     handleUpdate (index, row) {
+      console.log('id=' + row.id)
       this.$router.push({path: '/item/update', query: {id: row.id}})
     },
     handleDelete (index, row) {

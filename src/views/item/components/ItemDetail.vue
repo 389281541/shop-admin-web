@@ -30,7 +30,6 @@
 <script>
 import {fetchList, createItem, updateItem, getItem} from '@/api/item'
 const defaultProductItem = {
-  id: null,
   name: '',
   parentId: null,
   sortId: 0
@@ -59,7 +58,9 @@ export default {
   },
   created () {
     if (this.isEdit) {
-      getItem(this.$router.query.id).then(response => {
+      this.id = this.$route.query.id
+      console.log('id=' + this.id)
+      getItem(this.id).then(response => {
         this.productItem = response.data
       })
     } else {
@@ -83,7 +84,8 @@ export default {
             type: 'warning'
           }).then(() => {
             if (this.isEdit) {
-              this.productItem.id = this.$route.query.id
+              this.productItem.id = this.id
+              this.$set(this.productItem, 'id', this.id)
               updateItem(this.productItem).then(response => {
                 this.$message({
                   message: '修改成功',
