@@ -17,8 +17,8 @@
           </el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="排序：">
-        <el-input v-model="productItem.sortId"></el-input>
+      <el-form-item label="类别编号：">
+        <el-input v-model="productItem.itemNo"></el-input>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="onSubmit('productItemForm')">提交</el-button>
@@ -32,7 +32,7 @@ import {fetchList, createItem, updateItem, getItem} from '@/api/item'
 const defaultProductItem = {
   name: '',
   parentId: null,
-  sortId: 0
+  itemNo: 0
 }
 export default {
   name: 'ItemDetail',
@@ -61,7 +61,9 @@ export default {
       this.id = this.$route.query.id
       console.log('id=' + this.id)
       getItem(this.id).then(response => {
-        this.productItem = response.data
+        this.productItem.name = response.data.name
+        this.productItem.parentId = response.data.parentId
+        this.productItem.itemNo = response.data.itemNo
       })
     } else {
       this.productItem = Object.assign({}, defaultProductItem)
@@ -76,7 +78,7 @@ export default {
       })
     },
     onSubmit (formName) {
-      this.refs[formName].valid((valid) => {
+      this.$refs[formName].validate((valid) => {
         if (valid) {
           this.$confirm('是否提交数据', '提示', {
             confirmButtonText: '确定',
