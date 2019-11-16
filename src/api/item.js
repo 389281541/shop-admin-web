@@ -1,10 +1,18 @@
 import request from '@/utils/request'
 
-export function fetchList (data) {
+export function fetchItemList (data) {
   return request({
     url: '/item/page',
     method: 'post',
     data: data
+  })
+}
+
+export function fetchAllSubItemList () {
+  return request({
+    url: '/item/subList',
+    method: 'post',
+    data: null
   })
 }
 

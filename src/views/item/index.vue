@@ -5,7 +5,7 @@
       <span style="margin-top: 5px">类别列表</span>
       <el-button
         class="btn-add"
-        @click="handleAddItem()"
+        @click="handleAdd()"
         size="mini">
         添加
       </el-button>
@@ -77,7 +77,7 @@
 </template>
 
 <script>
-import {fetchList, deleteItem} from '@/api/item'
+import {fetchItemList, deleteItem} from '@/api/item'
 export default {
   name: 'itemList',
   data () {
@@ -100,13 +100,13 @@ export default {
   methods: {
     getList () {
       this.listLoading = true
-      fetchList(this.listQuery).then(response => {
+      fetchItemList(this.listQuery).then(response => {
         this.listLoading = false
         this.list = response.data.records
         this.total = response.data.total
       })
     },
-    handleAddItem () {
+    handleAdd () {
       this.$router.push('/item/add')
     },
     handleShowNextLevel (index, row) {
@@ -132,7 +132,7 @@ export default {
       this.$router.push({path: '/item/update', query: {id: row.id}})
     },
     handleDelete (index, row) {
-      this.$confirm('是否要删除该品牌', '提示', {
+      this.$confirm('是否要删除该类别', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'

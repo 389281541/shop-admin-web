@@ -28,7 +28,7 @@
 </template>
 
 <script>
-import {fetchList, createItem, updateItem, getItem} from '@/api/item'
+import {fetchItemList, createItem, updateItem, getItem} from '@/api/item'
 const defaultProductItem = {
   name: '',
   parentId: null,
@@ -72,7 +72,7 @@ export default {
   },
   methods: {
     getParentItemList () {
-      fetchList({id: null, pageNum: 1, pageSize: 200}).then(response => {
+      fetchItemList({id: null, pageNum: 1, pageSize: 200}).then(response => {
         this.parentItemList = response.data.records
         this.parentItemList.unshift({id: null, name: '无上级分类'})
       })
