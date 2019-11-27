@@ -20,58 +20,51 @@ export const constantRouterMap = [
     }]
   },
   {
-    path: '/item',
+    path: '/product',
     component: Layout,
-    redirect: '/item/index',
-    name: 'item',
-    meta: {title: '类别', icon: 'item'},
+    redirect: '/product/item',
+    name: 'product',
+    meta: {title: '商品', icon: 'product'},
     children: [
       {
-        path: 'index',
-        name: 'index',
-        component: () => import('@/views/item/index'),
-        meta: {title: '类别列表', icon: 'item-list'}
+        path: 'item',
+        name: 'item',
+        component: () => import('@/views/product/item/index'),
+        meta: {title: '类别管理', icon: 'item-list'}
       },
       {
-        path: 'update',
-        name: 'update',
-        component: () => import('@/views/item/update'),
+        path: 'updateItem',
+        name: 'updateItem',
+        component: () => import('@/views/product/item/update'),
         meta: {title: '类别修改', icon: 'item-list'},
         hidden: true
       },
       {
-        path: 'add',
-        name: 'add',
-        component: () => import('@/views/item/add'),
-        meta: {title: '添加类别', icon: 'item-add'}
-      }
-    ]
-  },
-  {
-    path: '/brand',
-    component: Layout,
-    redirect: '/brand/index',
-    name: 'brand',
-    meta: {title: '品牌', icon: 'brand'},
-    children: [
-      {
-        path: 'index',
-        name: 'index',
-        component: () => import('@/views/brand/index'),
-        meta: {title: '品牌列表', icon: 'brand-list'}
+        path: 'addItem',
+        name: 'addItem',
+        component: () => import('@/views/product/item/add'),
+        meta: {title: '添加类别', icon: 'item-list'},
+        hidden: true
       },
       {
-        path: 'update',
-        name: 'update',
-        component: () => import('@/views/brand/update'),
+        path: 'brand',
+        name: 'brand',
+        component: () => import('@/views/product/brand/index'),
+        meta: {title: '品牌管理', icon: 'brand-list'}
+      },
+      {
+        path: 'updateBrand',
+        name: 'updateBrand',
+        component: () => import('@/views/product/brand/update'),
         meta: {title: '品牌更新', icon: 'brand-list'},
         hidden: true
       },
       {
-        path: 'add',
-        name: 'add',
-        component: () => import('@/views/brand/add'),
-        meta: {title: '添加品牌', icon: 'brand-add'}
+        path: 'addBrand',
+        name: 'addBrand',
+        component: () => import('@/views/product/brand/add'),
+        meta: {title: '添加品牌', icon: 'brand-list'},
+        hidden: true
       }
     ]
   },

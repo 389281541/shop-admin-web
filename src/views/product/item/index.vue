@@ -107,10 +107,11 @@ export default {
       })
     },
     handleAdd () {
-      this.$router.push('/item/add')
+      this.$router.push('/product/addItem')
     },
     handleShowNextLevel (index, row) {
       this.listQuery.id = row.id
+      this.listQuery.pageNum = 1
       this.getList()
     },
     handleShowLastLevel (index, row) {
@@ -129,7 +130,7 @@ export default {
     },
     handleUpdate (index, row) {
       console.log('id=' + row.id)
-      this.$router.push({path: '/item/update', query: {id: row.id}})
+      this.$router.push({path: '/product/updateItem', query: {id: row.id}})
     },
     handleDelete (index, row) {
       this.$confirm('是否要删除该类别', '提示', {

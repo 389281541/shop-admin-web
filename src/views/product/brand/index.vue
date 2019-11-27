@@ -124,10 +124,10 @@ export default {
       })
     },
     handleAddBrand () {
-      this.$router.push('/brand/add')
+      this.$router.push('/product/addBrand')
     },
     handleUpdate (index, row) {
-      this.$router.push({path: '/brand/update', query: {id: row.id}})
+      this.$router.push({path: '/product/updateBrand', query: {id: row.id}})
     },
     handleDelete (index, row) {
       this.$confirm('是否要删除该品牌', '提示', {
