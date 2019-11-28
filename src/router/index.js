@@ -65,6 +65,12 @@ export const constantRouterMap = [
         component: () => import('@/views/product/brand/add'),
         meta: {title: '添加品牌', icon: 'brand-list'},
         hidden: true
+      },
+      {
+        path: 'SpecName',
+        name: 'SpecName',
+        component: () => import('@/views/product/specName/index'),
+        meta: {title: '属性管理', icon: 'spec-list'}
       }
     ]
   },
