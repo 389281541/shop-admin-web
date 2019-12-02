@@ -8,6 +8,14 @@ export function fetchItemList (data) {
   })
 }
 
+export function fetchListWithChildren () {
+  return request({
+    url: '/item/listWithChildren',
+    method: 'post',
+    data: null
+  })
+}
+
 export function fetchAllSubItemList () {
   return request({
     url: '/item/subList',

@@ -71,6 +71,27 @@ export const constantRouterMap = [
         name: 'SpecName',
         component: () => import('@/views/product/specName/index'),
         meta: {title: '属性管理', icon: 'spec-list'}
+      },
+      {
+        path: 'addSpecName',
+        name: 'addSpecName',
+        component: () => import('@/views/product/specName/add'),
+        meta: {title: '属性添加', icon: 'spec-list'},
+        hidden: true
+      },
+      {
+        path: 'updateSpecName',
+        name: 'updateSpecName',
+        component: () => import('@/views/product/specName/update'),
+        meta: {title: '属性编辑', icon: 'spec-list'},
+        hidden: true
+      },
+      {
+        path: 'SpecValue',
+        name: 'SpecValue',
+        component: () => import('@/views/product/specValue/index'),
+        meta: {title: '属性管理', icon: 'spec-list'},
+        hidden: true
       }
     ]
   },

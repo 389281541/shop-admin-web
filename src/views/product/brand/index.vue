@@ -17,14 +17,10 @@
             <el-input style="width: 200px" v-model="listQuery.name" aria-placeholder="品牌名称/关键字"></el-input>
           </el-form-item>
           <el-form-item label="品牌分类：">
-            <el-select v-model="listQuery.id" placeholder="请选择分类" clearable class="input-width">
-              <el-option
-                v-for="item in itemList"
-                :key="item.id"
-                :label="item.name"
-                :value="item.id">
-              </el-option>
-            </el-select>
+            <el-cascader placeholder="请选择分类" clearable class="input-width"
+                         v-model="selectProductItemValue"
+                         :options="productItemOptions">
+            </el-cascader>
           </el-form-item>
         </el-form>
       </div>
@@ -88,11 +84,20 @@
 </template>
 <script>
 import {fetchBrandList, deleteBrand} from '@/api/brand'
-import {fetchAllSubItemList} from '@/api/item'
+import {fetchListWithChildren} from '@/api/item'
 export default {
   created () {
     this.getList()
-    this.getItemList()
+    this.getProductItemOptions()
+  },
+  watch: {
+    selectProductItemValue: function (newValue) {
+      if (newValue != null && newValue.length === 2) {
+        this.listQuery.id = newValue[1]
+      } else {
+        this.listQuery.id = null
+      }
+    }
   },
   data () {
     return {
@@ -104,8 +109,9 @@ export default {
         name: '',
         id: null
       },
-      itemList: [],
-      list: []
+      productItemOptions: [],
+      list: [],
+      selectProductItemValue: null
     }
   },
   methods: {
@@ -117,10 +123,19 @@ export default {
         this.total = response.data.total
       })
     },
-    getItemList () {
-      fetchAllSubItemList().then(response => {
-        this.itemList = response.data
-        this.itemList.unshift({id: null, name: '全部'})
+    getProductItemOptions () {
+      fetchListWithChildren().then(response => {
+        let list = response.data
+        this.productItemOptions = []
+        for (let i = 0; i < list.length; i++) {
+          let children = []
+          if (list[i].children != null && list[i].children.length > 0) {
+            for (let j = 0; j < list[i].children.length; j++) {
+              children.push({label: list[i].children[j].name, value: list[i].children[j].id})
+            }
+          }
+          this.productItemOptions.push({label: list[i].name, value: list[i].id, children: children})
+        }
       })
     },
     handleAddBrand () {

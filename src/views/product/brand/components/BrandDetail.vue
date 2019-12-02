@@ -37,6 +37,7 @@
 <script>
 import {createBrand, updateBrand, getBrand} from '@/api/brand'
 import {fetchAllSubItemList} from '@/api/item'
+import SingleUpload from '@/components/Upload/singleUpload'
 const defaultProductBrand = {
   name: '',
   logo: '',
@@ -45,6 +46,7 @@ const defaultProductBrand = {
 }
 export default {
   name: 'BrandDetail',
+  components: { SingleUpload },
   props: {
     isEdit: {
       type: Boolean,
