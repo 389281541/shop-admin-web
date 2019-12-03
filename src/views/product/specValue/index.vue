@@ -15,28 +15,28 @@
                 :data="list"
                 v-loading="listLoading" border>
         <el-table-column label="序号" width="150" align="center">
-          <template slot-scope="scope">{{scope.row.id}}</template>
+          <template slot-scope="scope">{{scope.row.sortId}}</template>
         </el-table-column>
         <el-table-column label="属性值" width="200" align="center">
           <template slot-scope="scope">{{scope.row.name}}</template>
-        </el-table-column>
-        <el-table-column label="排序" width="200" align="center">
-          <template slot-scope="scope">{{scope.row.sortId}}</template>
         </el-table-column>
         <el-table-column label="排序操作" width="200" align="center">
           <template slot-scope="scope">
             <el-button
               size="mini"
-              @click="handleUpRanking(scope.$index, scope.row)">上移
+              icon="el-icon-top"
+              :disabled="scope.$index === 0"
+              @click="handleUpRanking(scope.$index, scope.row)" circle>
             </el-button>
             <el-button
               size="mini"
-              type="danger"
-              @click="handleDownRanking(scope.$index, scope.row)">下移
+              icon="el-icon-bottom"
+              :disabled="scope.$index === (total-1)"
+              @click="handleDownRanking(scope.$index, scope.row)" circle>
             </el-button>
           </template>
         </el-table-column>
-        <el-table-column label="创建时间"  align="center">
+        <el-table-column label="创建时间" align="center">
           <template slot-scope="scope">{{scope.row.createTime}}</template>
         </el-table-column>
         <el-table-column label="操作" width="200" align="center">
@@ -70,7 +70,8 @@
 </template>
 
 <script>
-import {fetchSpecValueList, deleteSpecValue} from '@/api/SpecValue'
+import {fetchSpecValueList, deleteSpecValue, upDownSpecValue} from '@/api/SpecValue'
+
 export default {
   name: 'SpecValue',
   data () {
@@ -93,7 +94,7 @@ export default {
     }
   },
   created () {
-    this.id = this.$route.query.id;
+    this.id = this.$route.query.id
     this.listQuery.id = this.id
     this.rankingParam.id = this.id
     this.getList()
@@ -125,8 +126,18 @@ export default {
       this.$router.push({path: '/product/updateSpecValue', query: {id: row.id}})
     },
     handleUpRanking (index, row) {
+      this.rankingParam.specValueId = row.id
+      this.rankingParam.type = 0
+      upDownSpecValue(this.rankingParam).then(response => {
+        this.getList()
+      })
     },
     handleDownRanking (index, row) {
+      this.rankingParam.specValueId = row.id
+      this.rankingParam.type = 1
+      upDownSpecValue(this.rankingParam).then(response => {
+        this.getList()
+      })
     },
     handleDelete (index, row) {
       this.$confirm('是否要删除该类别', '提示', {

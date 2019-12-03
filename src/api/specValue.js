@@ -43,3 +43,11 @@ export function deleteSpecValue (id) {
     }
   })
 }
+
+export function upDownSpecValue (data) {
+  return request({
+    url: '/specValue/upDownRanking',
+    method: 'post',
+    data: data
+  })
+}
