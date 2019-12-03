@@ -2,7 +2,7 @@
   <div class="app-container">
     <el-card class="operate-container" shadow="never">
       <i class="el-icon-tickets" style="margin-top: 5px"></i>
-      <span style="margin-top: 5px">{{specName}}：属性值列表</span>
+      <span style="margin-top: 5px">{{specName}}属性值列表</span>
       <el-button
         class="btn-add"
         @click="handleAdd()"
@@ -19,6 +19,22 @@
         </el-table-column>
         <el-table-column label="属性值" width="200" align="center">
           <template slot-scope="scope">{{scope.row.name}}</template>
+        </el-table-column>
+        <el-table-column label="排序" width="200" align="center">
+          <template slot-scope="scope">{{scope.row.sortId}}</template>
+        </el-table-column>
+        <el-table-column label="排序操作" width="200" align="center">
+          <template slot-scope="scope">
+            <el-button
+              size="mini"
+              @click="handleUpRanking(scope.$index, scope.row)">上移
+            </el-button>
+            <el-button
+              size="mini"
+              type="danger"
+              @click="handleDownRanking(scope.$index, scope.row)">下移
+            </el-button>
+          </template>
         </el-table-column>
         <el-table-column label="创建时间"  align="center">
           <template slot-scope="scope">{{scope.row.createTime}}</template>
@@ -59,6 +75,7 @@ export default {
   name: 'SpecValue',
   data () {
     return {
+      id: null,
       specName: '',
       list: [],
       listLoading: false,
@@ -67,11 +84,18 @@ export default {
         id: null,
         pageNum: 1,
         pageSize: 5
+      },
+      rankingParam: {
+        id: null,
+        specValueId: null,
+        type: 0
       }
     }
   },
   created () {
-    this.listQuery.id = this.$route.query.id
+    this.id = this.$route.query.id;
+    this.listQuery.id = this.id
+    this.rankingParam.id = this.id
     this.getList()
   },
   methods: {
@@ -99,6 +123,10 @@ export default {
     handleUpdate (index, row) {
       console.log('id=' + row.id)
       this.$router.push({path: '/product/updateSpecValue', query: {id: row.id}})
+    },
+    handleUpRanking (index, row) {
+    },
+    handleDownRanking (index, row) {
     },
     handleDelete (index, row) {
       this.$confirm('是否要删除该类别', '提示', {
