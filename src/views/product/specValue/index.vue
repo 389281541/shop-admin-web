@@ -25,7 +25,7 @@
             <el-button
               size="mini"
               icon="el-icon-top"
-              :disabled="scope.$index === 0"
+              :disabled="(scope.$index === 0)&&"
               @click="handleUpRanking(scope.$index, scope.row)" circle>
             </el-button>
             <el-button
@@ -81,6 +81,7 @@ export default {
       list: [],
       listLoading: false,
       total: null,
+      current: null,
       listQuery: {
         id: null,
         pageNum: 1,
@@ -110,7 +111,7 @@ export default {
       })
     },
     handleAdd () {
-      this.$router.push({path: '/product/addSpecValue', query: {name: this.specName}})
+      this.$router.push({path: '/product/addSpecValue', query: {name: this.specName, specNameId: this.id}})
     },
     handleSizeChange (val) {
       this.listQuery.pageNum = 1

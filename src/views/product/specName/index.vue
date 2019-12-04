@@ -205,7 +205,7 @@ export default {
       total: null,
       listQuery: {
         id: null,
-        name: '',
+        name: null,
         color: null,
         enumeration: null,
         input: null,

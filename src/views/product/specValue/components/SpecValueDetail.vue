@@ -14,14 +14,14 @@
         <el-input v-model="productSpecValue.sortId"></el-input>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="onSubmit('productSpecNameForm')">提交</el-button>
+        <el-button type="primary" @click="onSubmit('productSpecValueForm')">提交</el-button>
       </el-form-item>
     </el-form>
   </el-card>
 </template>
 
 <script>
-import {createSpecValue, updateSpecValue, getSpecValue} from '@/api/specValue'
+import {createSpecValue, updateSpecValue, getSpecValue} from '@/api/SpecValue'
 const defaultProductSpecValue = {
   specValue: '',
   sortId: null,
@@ -64,6 +64,7 @@ export default {
     } else {
       this.productSpecValue = Object.assign({}, defaultProductSpecValue)
       this.productSpecValue.specName = this.$route.query.name
+      this.productSpecValue.specNameId = this.$route.query.specNameId
     }
   },
   methods: {
