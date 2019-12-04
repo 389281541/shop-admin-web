@@ -89,7 +89,7 @@ export default {
       rankingParam: {
         id: null,
         specValueId: null,
-        type: 0
+        type: null
       }
     }
   },
@@ -110,7 +110,7 @@ export default {
       })
     },
     handleAdd () {
-      this.$router.push('/product/addSpecValue')
+      this.$router.push({path: '/product/addSpecValue', query: {name: this.specName}})
     },
     handleSizeChange (val) {
       this.listQuery.pageNum = 1

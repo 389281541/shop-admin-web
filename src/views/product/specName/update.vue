@@ -1,5 +1,5 @@
 <template>
-  <specName-detail :is-edit=true></specName-detail>
+  <spec-name-detail :is-edit=true></spec-name-detail>
 </template>
 <script>
 import SpecNameDetail from './components/SpecNameDetail'
