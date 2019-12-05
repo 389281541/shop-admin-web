@@ -7,8 +7,8 @@
       <el-form-item label="属性名：" prop="specName">
         <el-input v-model="productSpecValue.specName" :disabled="true"></el-input>
       </el-form-item>
-      <el-form-item label="属性值：" prop="name">
-        <el-input v-model="productSpecValue.specValue"></el-input>
+      <el-form-item label="属性值：" prop="specValue">
+        <el-input v-model="productSpecValue.specValue" @input="change($event)"></el-input>
       </el-form-item>
       <el-form-item label="排序：" prop="sortId">
         <el-input v-model="productSpecValue.sortId"></el-input>
@@ -39,6 +39,7 @@ export default {
   data () {
     return {
       id: null,
+      specNameId: null,
       productSpecValue: Object.assign({}, defaultProductSpecValue),
       rules: {
         specValue: [
@@ -57,14 +58,14 @@ export default {
       getSpecValue(this.id).then(response => {
         this.productSpecValue = response.data
         this.productSpecValue.specValue = response.data.name
-        // this.productSpecValue.sortId = response.data.sortId
-        // this.productSpecValue.specNameId = response.data.specNameId
-        // this.productSpecValue.specName = response.data.specName
+        this.productSpecValue.specNameId = response.data.specNameId
+        this.specNameId = response.data.specNameId
       })
     } else {
       this.productSpecValue = Object.assign({}, defaultProductSpecValue)
       this.productSpecValue.specName = this.$route.query.name
       this.productSpecValue.specNameId = this.$route.query.specNameId
+      this.specNameId = this.productSpecValue.specNameId
     }
   },
   methods: {
@@ -85,7 +86,7 @@ export default {
                   type: 'success',
                   duration: 1000
                 })
-                this.$router.back()
+                this.$router.push({path: '/product/SpecValue', query: {id: this.specNameId}})
               })
             } else {
               createSpecValue(this.productSpecValue).then(response => {
@@ -96,6 +97,7 @@ export default {
                   type: 'success',
                   duration: 1000
                 })
+                this.$router.push({path: '/product/SpecValue', query: {id: this.specNameId}})
               })
             }
           })
@@ -111,6 +113,9 @@ export default {
     resetForm (formName) {
       this.$refs[formName].resetFields()
       this.productSpecValue = Object.assign({}, defaultProductSpecValue)
+    },
+    change (e) {
+      this.$forceUpdate()
     }
   }
 }

@@ -99,6 +99,13 @@ export const constantRouterMap = [
         component: () => import('@/views/product/specValue/add'),
         meta: {title: '属性值添加', icon: 'spec-list'},
         hidden: true
+      },
+      {
+        path: 'updateSpecValue',
+        name: 'updateSpecValue',
+        component: () => import('@/views/product/specValue/update'),
+        meta: {title: '属性值更新', icon: 'spec-list'},
+        hidden: true
       }
     ]
   },

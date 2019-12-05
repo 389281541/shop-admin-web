@@ -25,13 +25,13 @@
             <el-button
               size="mini"
               icon="el-icon-top"
-              :disabled="(scope.$index === 0)&&"
-              @click="handleUpRanking(scope.$index, scope.row)" circle>
+              :disabled="first(scope.$index, scope.row)"
+              @click="handleUpRanking(scope.$index)" circle>
             </el-button>
             <el-button
               size="mini"
               icon="el-icon-bottom"
-              :disabled="scope.$index === (total-1)"
+              :disabled="last(scope.$index)"
               @click="handleDownRanking(scope.$index, scope.row)" circle>
             </el-button>
           </template>
@@ -109,6 +109,12 @@ export default {
         this.total = response.data.specValuePage.total
         this.specName = response.data.specName
       })
+    },
+    first (index) {
+      return index === 0 && this.listQuery.pageNum === 1
+    },
+    last (index) {
+      return index === (this.total - 1) % this.listQuery.pageSize && this.listQuery.pageNum === Math.ceil(this.total * 1.0 / this.listQuery.pageSize)
     },
     handleAdd () {
       this.$router.push({path: '/product/addSpecValue', query: {name: this.specName, specNameId: this.id}})
