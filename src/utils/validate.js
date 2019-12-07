@@ -26,3 +26,29 @@ export function validatAlphabets (str) {
   const reg = /^[A-Za-z]+$/
   return reg.test(str)
 }
+
+export function validatePhone (rule, value, callback) {
+  const reg = /^[1][3,4,5,7,8][0-9]{9}$/
+  if (value === '' || value === undefined || value === null) {
+    callback(new Error('手机号不能为空'))
+  } else {
+    if ((!reg.test(value)) && value !== '') {
+      callback(new Error('请输入正确的电话号码'))
+    } else {
+      callback()
+    }
+  }
+}
+
+export function validateIdNo (rule, value, callback) {
+  const reg = /(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/
+  if (value === '' || value === undefined || value === null) {
+    callback(new Error('身份证号不能为空'))
+  } else {
+    if ((!reg.test(value)) && value !== '') {
+      callback(new Error('请输入正确的身份证号码'))
+    } else {
+      callback()
+    }
+  }
+}

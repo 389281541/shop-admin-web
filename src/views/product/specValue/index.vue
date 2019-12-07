@@ -25,8 +25,8 @@
             <el-button
               size="mini"
               icon="el-icon-top"
-              :disabled="first(scope.$index, scope.row)"
-              @click="handleUpRanking(scope.$index)" circle>
+              :disabled="first(scope.$index)"
+              @click="handleUpRanking(scope.$index, scope.row)" circle>
             </el-button>
             <el-button
               size="mini"

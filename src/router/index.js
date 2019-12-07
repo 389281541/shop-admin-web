@@ -104,7 +104,27 @@ export const constantRouterMap = [
         path: 'updateSpecValue',
         name: 'updateSpecValue',
         component: () => import('@/views/product/specValue/update'),
-        meta: {title: '属性值更新', icon: 'spec-list'},
+        meta: {title: '属性值编辑', icon: 'spec-list'},
+        hidden: true
+      },
+      {
+        path: 'shop',
+        name: 'shop',
+        component: () => import('@/views/product/shop/index'),
+        meta: {title: '商铺管理', icon: 'shop-list'}
+      },
+      {
+        path: 'addShop',
+        name: 'addShop',
+        component: () => import('@/views/product/shop/add'),
+        meta: {title: '商铺添加', icon: 'spec-list'},
+        hidden: true
+      },
+      {
+        path: 'updateShop',
+        name: 'updateShop',
+        component: () => import('@/views/product/shop/update'),
+        meta: {title: '商铺编辑', icon: 'spec-list'},
         hidden: true
       }
     ]
