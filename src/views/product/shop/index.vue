@@ -70,7 +70,7 @@
         <template slot-scope="scope">{{scope.row.type | typeFilter}}</template>
       </el-table-column>
       <el-table-column label="LOGO" width="100" align="center">
-        <template slot-scope="scope">{{scope.row.logo}}</template>
+        <template slot-scope="scope"><img style="height: 80px" :src="scope.row.logo"></template>
       </el-table-column>
       <el-table-column label="店主" width="100" align="center">
         <template slot-scope="scope">{{scope.row.keeperName}}</template>

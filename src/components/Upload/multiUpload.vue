@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-upload
-      action="http://macro-oss.oss-cn-shenzhen.aliyuncs.com"
+      action="http://up-z1.qiniup.com"
       :data="dataObj"
       list-type="picture-card"
       :file-list="fileList"
@@ -20,7 +20,7 @@
   </div>
 </template>
 <script>
-import {policy} from '@/api/oss'
+import {getToken} from '@/api/upload'
 
 export default {
   name: 'multiUpload',
@@ -30,22 +30,19 @@ export default {
     // 最大上传图片数量
     maxCount: {
       type: Number,
-      default: 5
+      default: 10
     }
   },
   data () {
     return {
       dataObj: {
-        policy: '',
-        signature: '',
-        key: '',
-        ossaccessKeyId: '',
-        dir: '',
-        host: ''
+        token: '',
+        key: ''
       },
+      host: '',
       dialogVisible: false,
       dialogImageUrl: null
-    };
+    }
   },
   computed: {
     fileList () {
@@ -74,14 +71,10 @@ export default {
     beforeUpload (file) {
       let _self = this
       return new Promise((resolve, reject) => {
-        policy().then(response => {
-          _self.dataObj.policy = response.data.policy
-          _self.dataObj.signature = response.data.signature
-          _self.dataObj.ossaccessKeyId = response.data.accessKeyId
-          // eslint-disable-next-line no-template-curly-in-string
-          _self.dataObj.key = response.data.dir + '/${filename}'
-          _self.dataObj.dir = response.data.dir
-          _self.dataObj.host = response.data.host
+        getToken().then(response => {
+          _self.dataObj.key = response.data.key
+          _self.dataObj.token = response.data.token
+          _self.host = response.data.url
           resolve(true)
         }).catch(err => {
           console.log(err)
@@ -90,7 +83,7 @@ export default {
       })
     },
     handleUploadSuccess (res, file) {
-      this.fileList.push({url: file.name, url: this.dataObj.host + '/' + this.dataObj.dir + '/' + file.name})
+      this.fileList.push({name: file.name, url: this.host + '/' + this.dataObj.key})
       this.emitInput(this.fileList)
     },
     handleExceed (files, fileList) {
@@ -99,7 +92,7 @@ export default {
         type: 'warning',
         duration: 1000
       })
-    },
+    }
   }
 }
 </script>

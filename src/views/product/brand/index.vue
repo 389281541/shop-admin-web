@@ -47,7 +47,7 @@
         <template slot-scope="scope">{{scope.row.name}}</template>
       </el-table-column>
       <el-table-column label="商标" width="200" align="center">
-        <template slot-scope="scope">{{scope.row.logo}}</template>
+        <template slot-scope="scope"><img style="height: 80px" :src="scope.row.logo"></template>
       </el-table-column>
       <el-table-column label="创建时间" width="400" align="center">
         <template slot-scope="scope">{{scope.row.createTime}}</template>

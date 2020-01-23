@@ -1,7 +1,7 @@
 import request from '@/utils/request'
-export function policy () {
+export function getToken () {
   return request({
-    url: '/aliyun/oss/policy',
+    url: '/upload/getToken',
     method: 'get'
   })
 }
