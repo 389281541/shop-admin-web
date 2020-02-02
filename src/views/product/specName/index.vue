@@ -116,9 +116,9 @@
         <el-table-column label="属性名称" width="100" align="center">
           <template slot-scope="scope">{{scope.row.name}}</template>
         </el-table-column>
-<!--        <el-table-column label="存在别名" width="100" align="center">-->
-<!--          <template slot-scope="scope">{{scope.row.existAlias | verifyStatusFilter}}</template>-->
-<!--        </el-table-column>-->
+        <el-table-column label="类型" width="100" align="center">
+          <template slot-scope="scope">{{scope.row.type | typeFilter}}</template>
+        </el-table-column>
         <el-table-column label="颜色属性" width="80" align="center">
           <template slot-scope="scope">{{scope.row.color | verifyStatusFilter}}</template>
         </el-table-column>
@@ -235,6 +235,13 @@ export default {
         return '是'
       } else {
         return '否'
+      }
+    },
+    typeFilter (value) {
+      if (value === 0) {
+        return '规格'
+      } else {
+        return '参数'
       }
     },
     specValueFilter (value) {

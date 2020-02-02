@@ -12,6 +12,16 @@
                      :options="productItemOptions">
         </el-cascader>
       </el-form-item>
+      <el-form-item label="属性类型：" prop="type">
+        <el-select v-model="productSpecName.type" clearable class="input-width">
+          <el-option
+            v-for="item in typeOptions"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value">
+          </el-option>
+        </el-select>
+      </el-form-item>
       <el-form-item label="颜色属性：">
         <el-select v-model="productSpecName.color" clearable class="input-width">
           <el-option
@@ -136,6 +146,14 @@ export default {
         }, {
           value: 0,
           label: '否'
+        }],
+      typeOptions: [
+        {
+          value: 0,
+          label: '规格'
+        }, {
+          value: 1,
+          label: '参数'
         }]
     }
   },

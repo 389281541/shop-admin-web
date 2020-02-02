@@ -22,10 +22,30 @@ export const constantRouterMap = [
   {
     path: '/product',
     component: Layout,
-    redirect: '/product/item',
+    redirect: '/product/spu',
     name: 'product',
     meta: {title: '商品', icon: 'product'},
     children: [
+      {
+        path: 'spu',
+        name: 'spu',
+        component: () => import('@/views/product/spu/index'),
+        meta: {title: '商品管理', icon: 'product-list'}
+      },
+      {
+        path: 'addSpu',
+        name: 'addSpu',
+        component: () => import('@/views/product/spu/add'),
+        meta: {title: '商品添加', icon: 'product-list'},
+        hidden: true
+      },
+      {
+        path: 'updateSpu',
+        name: 'updateSpu',
+        component: () => import('@/views/product/spu/update'),
+        meta: {title: '商品更新', icon: 'product-list'},
+        hidden: true
+      },
       {
         path: 'item',
         name: 'item',
