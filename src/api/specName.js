@@ -43,3 +43,13 @@ export function deleteSpecName (id) {
     }
   })
 }
+
+export function fetchListByItemId (id) {
+  return request({
+    url: '/specName/listByItemId',
+    method: 'post',
+    data: {
+      id: id
+    }
+  })
+}

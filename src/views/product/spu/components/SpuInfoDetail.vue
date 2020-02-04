@@ -20,13 +20,6 @@
           </el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="商品类别：" prop="itemId">
-        <el-cascader
-          clearable
-          v-model="selectProductItemValue"
-          :options="itemOptions">
-        </el-cascader>
-      </el-form-item>
       <el-form-item label="商品店铺：" prop="shopId">
         <el-select
           v-model="value.shopId"
@@ -77,7 +70,6 @@
   </div>
 </template>
 <script>
-import {fetchListWithChildren} from '@/api/item'
 import {fetchBrandList} from '@/api/brand'
 import {fetchShopList} from '@/api/shop'
 export default {
@@ -101,7 +93,6 @@ export default {
           {min: 2, max: 140, message: '长度在 2 到 140 个字符', trigger: 'blur'}
         ],
         shopId: [{required: true, message: '请选择店铺', trigger: 'blur'}],
-        itemId: [{required: true, message: '请选择商品分类', trigger: 'blur'}],
         brandId: [{required: true, message: '请选择商品品牌', trigger: 'blur'}],
         description: [{required: true, message: '请输入商品介绍', trigger: 'blur'}],
         sortId: [{required: true, message: '请输入排序', trigger: 'blur'}]
@@ -110,19 +101,7 @@ export default {
   },
   created () {
     this.getBrandOptions()
-    this.getItemOptions()
     this.getShopOptions()
-  },
-  watch: {
-    selectProductItemValue: function (newValue) {
-      if (newValue != null && newValue.length === 2) {
-        this.value.itemId = newValue[1]
-        this.value.itemName = this.getItemNameById(this.value.itemId)
-      } else {
-        this.value.itemId = null
-        this.value.itemName = null
-      }
-    }
   },
   methods: {
     handleBrandChange (val) {
@@ -145,21 +124,6 @@ export default {
       }
       this.value.shopName = shopName
     },
-    getItemOptions () {
-      fetchListWithChildren().then(response => {
-        let list = response.data
-        this.itemOptions = []
-        for (let i = 0; i < list.length; i++) {
-          let children = []
-          if (list[i].children != null && list[i].children.length > 0) {
-            for (let j = 0; j < list[i].children.length; j++) {
-              children.push({label: list[i].children[j].name, value: list[i].children[j].id})
-            }
-          }
-          this.itemOptions.push({label: list[i].name, value: list[i].id, children: children})
-        }
-      })
-    },
     getBrandOptions () {
       fetchBrandList({pageNum: 1, pageSize: 1000}).then(response => {
         this.brandOptions = []
@@ -177,18 +141,6 @@ export default {
           this.shopOptions.push({label: shopList[i].name, value: shopList[i].id})
         }
       })
-    },
-    getItemNameById (id) {
-      let name = null
-      for (let i = 0; i < this.itemOptions.length; i++) {
-        for (let j = 0; i < this.itemOptions[i].children.length; j++) {
-          if (this.itemOptions[i].children[j].value === id) {
-            name = this.itemOptions[i].children[j].label
-            return name
-          }
-        }
-      }
-      return name
     },
     handleNext (formName) {
       this.$refs[formName].validate((valid) => {
