@@ -26,7 +26,7 @@ export function updateSpu (data) {
 
 export function getSpu (id) {
   return request({
-    url: '/brand/detail',
+    url: '/spu/detail',
     method: 'post',
     data: {
       id: id
@@ -36,7 +36,7 @@ export function getSpu (id) {
 
 export function deleteSpu (id) {
   return request({
-    url: '/brand/remove',
+    url: '/spu/remove',
     method: 'post',
     data: {
       id: id

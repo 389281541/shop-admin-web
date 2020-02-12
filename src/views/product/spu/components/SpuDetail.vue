@@ -3,7 +3,7 @@
     <el-steps :active="active" finish-status="success" align-center>
       <el-step title="填写商品信息"></el-step>
       <el-step title="填写商品关联属性"></el-step>
-      <el-step title="填写商品促销"></el-step>
+<!--      <el-step title="填写商品促销"></el-step>-->
     </el-steps>
     <spu-info-detail
       v-show="showStatus[0]"
@@ -34,6 +34,7 @@ import SpuSaleDetail from './SpuSaleDetail'
 import {createSpu, getSpu, updateSpu} from '@/api/spu'
 
 const defaultSpuParam = {
+  'id': null,
   'name': null,
   'spuNo': null,
   'brandId': null,
