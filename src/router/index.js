@@ -149,6 +149,41 @@ export const constantRouterMap = [
       }
     ]
   },
+  {
+    path: '/trade',
+    component: Layout,
+    redirect: '/trade/order',
+    name: 'order',
+    meta: {title: '订单', icon: 'order'},
+    children: [
+      {
+        path: 'order',
+        name: 'order',
+        component: () => import('@/views/order/index'),
+        meta: {title: '订单列表', icon: 'product-list'}
+      },
+      {
+        path: 'orderDetail',
+        name: 'orderDetail',
+        component: () => import('@/views/order/orderDetail'),
+        meta: {title: '订单详情'},
+        hidden: true
+      },
+      {
+        path: 'deliverOrderList',
+        name: 'deliverOrderList',
+        component: () => import('@/views/order/deliverOrderList'),
+        meta: {title: '发货列表'},
+        hidden: true
+      },
+      {
+        path: 'orderSetting',
+        name: 'orderSetting',
+        component: () => import('@/views/order/setting'),
+        meta: {title: '订单设置', icon: 'order-setting'}
+      }
+    ]
+  },
   {path: '*', redirect: '/404', hidden: true}
 ]
 

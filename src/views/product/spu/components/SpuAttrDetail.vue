@@ -14,7 +14,7 @@
           <div v-for="skuSpec in skuSpecList" :key="skuSpec.id">
             {{skuSpec.name}}：
             <el-checkbox-group v-model="selectSkuSpecValues[skuSpec.specNameId]">
-              <el-checkbox v-for="item in skuSpec.specValues" :label="item.id" :key="item.id"
+              <el-checkbox v-for="item in skuSpec.specValues" :label="item.name" :key="item.id"
                            class="littleMarginLeft"></el-checkbox>
             </el-checkbox-group>
           </div>
@@ -296,8 +296,6 @@ export default {
     refreshskuPics () {
     },
     refreshSkuList () {
-      this.value.skuList = []
-      let skuList = this.value.skuList
     },
     handleSyncSkuPrice () {
     },
