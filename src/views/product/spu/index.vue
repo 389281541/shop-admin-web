@@ -68,7 +68,7 @@
             </el-select>
           </el-form-item>
           <el-form-item label="推荐状态：">
-            <el-select v-model="listQuery.recommend" placeholder="全部" clearable>
+            <el-select v-model="listQuery.recommendStatus" placeholder="全部" clearable>
               <el-option
                 v-for="item in recommendStatusOptions"
                 :key="item.value"
@@ -324,7 +324,7 @@ export default {
         shopId: null,
         saleStatus: null,
         auditStatus: null,
-        recommend: null
+        recommendStatus: null
       },
       saleStatusOptions: [{
         value: 1,

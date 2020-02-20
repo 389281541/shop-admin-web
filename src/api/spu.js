@@ -8,6 +8,14 @@ export function fetchSpuList (data) {
   })
 }
 
+export function fetchSimpleList (params) {
+  return request({
+    url: '/spu/simpleList',
+    method: 'get',
+    params: params
+  })
+}
+
 export function createSpu (data) {
   return request({
     url: '/spu/add',

@@ -184,6 +184,48 @@ export const constantRouterMap = [
       }
     ]
   },
+  {
+    path: '/activity',
+    component: Layout,
+    redirect: '/activity/coupon',
+    name: 'activity',
+    meta: {title: '营销', icon: 'activity'},
+    children: [
+      {
+        path: 'coupon',
+        name: 'coupon',
+        component: () => import('@/views/coupon/index'),
+        meta: {title: '优惠券列表', icon: 'coupon'}
+      },
+      {
+        path: 'addCoupon',
+        name: 'addCoupon',
+        component: () => import('@/views/coupon/add'),
+        meta: {title: '添加优惠券'},
+        hidden: true
+      },
+      {
+        path: 'updateCoupon',
+        name: 'updateCoupon',
+        component: () => import('@/views/coupon/update'),
+        meta: {title: '修改优惠券'},
+        hidden: true
+      },
+      {
+        path: 'couponHistory',
+        name: 'couponHistory',
+        component: () => import('@/views/coupon/history'),
+        meta: {title: '优惠券领取详情'},
+        hidden: true
+      },
+      {
+        path: 'flash',
+        name: 'flash',
+        component: () => import('@/views/flash/index'),
+        meta: {title: '秒杀活动列表', icon: 'flash'}
+      }
+    ]
+  },
   {path: '*', redirect: '/404', hidden: true}
 ]
 

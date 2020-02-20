@@ -362,9 +362,7 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        let params = new URLSearchParams()
-        params.append('ids', ids)
-        deleteOrder(params).then(response => {
+        deleteOrder(ids).then(response => {
           this.$message({
             message: '删除成功！',
             type: 'success',
