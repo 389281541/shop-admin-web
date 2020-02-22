@@ -141,7 +141,7 @@
                 @change="handleRecommendStatusChange(scope.$index, scope.row)"
                 :active-value="1"
                 :inactive-value="0"
-                v-model="scope.row.recommandStatus">
+                v-model="scope.row.recommendStatus">
               </el-switch>
             </p>
           </template>
@@ -500,7 +500,7 @@ export default {
     handleRecommendStatusChange (index, row) {
       let ids = []
       ids.push(row.id)
-      this.updateRecommendStatus(row.recommandStatus, ids)
+      this.updateRecommendStatus(row.recommendStatus, ids)
     },
     updateSaleStatus (saleStatus, ids) {
       setSaleStatus({

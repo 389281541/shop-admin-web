@@ -154,7 +154,7 @@ export const constantRouterMap = [
     component: Layout,
     redirect: '/trade/order',
     name: 'order',
-    meta: {title: '订单', icon: 'order'},
+    meta: {title: '交易', icon: 'order'},
     children: [
       {
         path: 'order',
@@ -189,7 +189,7 @@ export const constantRouterMap = [
     component: Layout,
     redirect: '/activity/coupon',
     name: 'activity',
-    meta: {title: '营销', icon: 'activity'},
+    meta: {title: '活动', icon: 'activity'},
     children: [
       {
         path: 'coupon',
@@ -223,6 +223,27 @@ export const constantRouterMap = [
         name: 'flash',
         component: () => import('@/views/flash/index'),
         meta: {title: '秒杀活动列表', icon: 'flash'}
+      },
+      {
+        path: 'sessionList',
+        name: 'sessionList',
+        component: () => import('@/views/flash/sessionList'),
+        meta: {title: '秒杀时间段列表', icon: 'flash'},
+        hidden: true
+      },
+      {
+        path: 'selectSessionList',
+        name: 'selectSessionList',
+        component: () => import('@/views/flash/selectSessionList'),
+        meta: {title: '秒杀时间段选择', icon: 'flash'},
+        hidden: true
+      },
+      {
+        path: 'flashSpuList',
+        name: 'flashSpuList',
+        component: () => import('@/views/flash/flashSpuList'),
+        meta: {title: '秒杀商品列表', icon: 'flash'},
+        hidden: true
       }
     ]
   },
