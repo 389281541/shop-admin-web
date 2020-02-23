@@ -4,7 +4,7 @@
              :rules="rules"
              ref="productBrandForm"
              label-width="150px">
-      <el-form-item label="分类名称：" prop="name">
+      <el-form-item label="品牌名称：" prop="name">
         <el-input v-model="productBrand.name"></el-input>
       </el-form-item>
       <el-form-item label="品牌类别：">

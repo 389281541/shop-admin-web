@@ -4,7 +4,7 @@
       <el-form-item label="商品类别：" prop="itemId">
         <el-cascader
           clearable
-          v-model="selectSpuItemValue"
+          v-model="value.itemId"
           @change="handleSpuAttrChange"
           :options="itemOptions">
         </el-cascader>
@@ -13,14 +13,13 @@
         <el-card shadow="never" class="cardBg">
           <div v-for="skuSpec in skuSpecList" :key="skuSpec.id">
             {{skuSpec.name}}：
-            <el-checkbox-group v-model="selectSkuSpecValues[skuSpec.specNameId]">
+            <el-checkbox-group v-model="skuSpec.selectSpecValues">
               <el-checkbox v-for="item in skuSpec.specValues" :label="item.name" :key="item.id"
                            class="littleMarginLeft"></el-checkbox>
             </el-checkbox-group>
           </div>
         </el-card>
-      </el-form-item>
-      <el-table style="width: 100%;margin-top: 20px"
+        <el-table style="width: 100%;margin-top: 20px"
                 :data="value.skuList"
                 border>
         <el-table-column
@@ -30,14 +29,11 @@
             <el-input v-model="scope.row.skuNo"></el-input>
           </template>
         </el-table-column>
-        <template slot-scope="scope">
-          <el-table-column v-for="item in scope.row.skuSpecList"
-                           :label="item.specName"
-                           :key="item.id"
-                           :prop="item.specValue"
-                           align="center">
-          </el-table-column>
-        </template>
+        <el-table-column :label="item" v-for="item in headers" :key="item">
+          <template slot-scope="scope">
+            {{scope.row.skuSpecMap[item]}}
+          </template>
+        </el-table-column>
         <el-table-column
           label="商品库存"
           width="80"
@@ -56,33 +52,10 @@
         </el-table-column>
         <el-table-column
           label="销量"
-          width="100"
+          width="50"
           align="center">
           <template slot-scope="scope">
             <el-input v-model="scope.row.sale" :disabled="true"></el-input>
-          </template>
-        </el-table-column>
-        <el-table-column
-          label="重量"
-          width="100"
-          align="center">
-          <template slot-scope="scope">
-            <el-input v-model="scope.row.weight"></el-input>
-          </template>
-        </el-table-column>
-        <el-table-column
-          label="尺寸"
-          width="100"
-          align="center">
-          <template slot-scope="scope">
-            <el-select v-model="scope.row.dimension" placeholder="全部" clearable class="input-width">
-              <el-option
-                v-for="item in dimensionOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
-              </el-option>
-            </el-select>
           </template>
         </el-table-column>
         <el-table-column
@@ -123,18 +96,16 @@
         style="margin-top: 20px"
         @click="handleSyncSkuPrice">同步价格
       </el-button>
+      </el-form-item>
       <el-form-item label="商品图片：">
         <el-table style="width: 100%;margin-top: 20px"
                   :data="value.spuImgList"
                   border>
-          <template slot-scope="scope">
-            <el-table-column v-for="item in scope.row.skuSpecList"
-                             :label="item.specName"
-                             :key="item.id"
-                             :prop="item.specValue"
-                             align="center">
-            </el-table-column>
-          </template>
+          <el-table-column :label="item" v-for="item in headers" :key="item">
+            <template slot-scope="scope">
+              {{scope.row.skuSpecMap[item]}}
+            </template>
+          </el-table-column>
           <el-table-column
             label="图片"
             width="200"
@@ -207,8 +178,8 @@
 <script>
 import {fetchListWithChildren} from '@/api/item'
 import {fetchListByItemId} from '@/api/specName'
-import {fetchSkuSpecListBySpuId} from '@/api/skuSpec'
-import {fetchSpuSpecListBySpuId} from '@/api/spuSpec'
+// import {fetchSkuSpecListBySpuId} from '@/api/skuSpec'
+// import {fetchSpuSpecListBySpuId} from '@/api/spuSpec'
 
 export default {
   name: 'SpuAttrDetail',
@@ -223,32 +194,40 @@ export default {
   data () {
     return {
       id: null,
+      itemId: null,
       itemOptions: [],
       skuSpecList: [],
       spuSpecList: [],
       selectSpuItemValue: null,
-      selectSkuSpecValues: {},
       selectSpuSpecValues: [],
+      headers: [],
       rules: {
         itemId: [{required: true, message: '请选择商品分类', trigger: 'blur'}]
       }
     }
   },
   created () {
-    this.getItemOptions()
-    this.getSpecList()
-  },
-  watch: {
-    selectSpuItemValue: function (newValue) {
-      if (newValue != null && newValue.length === 2) {
-        this.value.itemId = newValue[1]
-        this.value.itemName = this.getItemNameById(this.value.itemId)
-      } else {
-        this.value.itemId = null
-        this.value.itemName = null
+    if (this.isEdit) {
+      for (let i = 0; i < this.value.skuList[0].skuSpecList.length; i++) {
+        this.headers.push(this.value.skuList[0].skuSpecList[i].specName)
       }
     }
+    // 更新
+    this.getItemOptions()
+    // this.getSpecList()
   },
+  // watch: {
+  //      value.itemId: function (newValue) {
+  //     if (newValue != null && newValue.length === 2) {
+  //       this.value.itemId = newValue[1]
+  //     } else {
+  //       this.value.itemId = null
+  //       this.value.itemName = null
+  //     }
+  //     this.getSpecList()
+  //     console.log('itemId = ' + this.itemId)
+  //   }
+  // },
   methods: {
     getItemOptions () {
       fetchListWithChildren().then(response => {
@@ -277,8 +256,8 @@ export default {
       }
       return name
     },
-    getSpecList () {
-      fetchListByItemId({id: this.value.itemId}).then(response => {
+    getSpecList (itemId, spuId) {
+      fetchListByItemId({itemId: itemId, spuId: spuId}).then(response => {
         this.skuSpecList = response.data.skuSpecList
         this.spuSpecList = response.data.spuSpecList
       })
@@ -296,24 +275,98 @@ export default {
     refreshskuPics () {
     },
     refreshSkuList () {
+      this.value.skuList = []
+      this.headers = []
+      let skuList = this.value.skuList
+      console.log('init skuList size =' + skuList.length)
+      let skuSelectSpecList = []
+      for (let i = 0; i < this.skuSpecList.length; i++) {
+        if (this.skuSpecList[i].selectSpecValues.length === 0) {
+          continue
+        }
+        this.headers.push(this.skuSpecList[i].name)
+        skuSelectSpecList.push(this.skuSpecList[i].selectSpecValues)
+      }
+      console.log('headers=' + this.headers)
+      if (skuSelectSpecList.length === 0) {
+        return
+      }
+      let result = skuSelectSpecList.reduce((last, current) => {
+        const array = []
+        last.forEach(par1 => {
+          current.forEach(par2 => {
+            array.push(par1 + '_' + par2)
+          })
+        })
+        return array
+      })
+      console.log('dkeji = ' + result + ', length=' + result.length)
+      let skuSpecSaveList = []
+      let skuSpecMap = {}
+      for (let i = 0; i < result.length; i++) {
+        let split = result[i].split('_')
+        for (let j = 0; j < split.length; j++) {
+          skuSpecSaveList.push({
+            specNameId: this.getSpecNameBySpecValue(split[j]).id,
+            specName: this.getSpecNameBySpecValue(split[j]).name,
+            specValueId: this.getSpecIdBySpecValue(split[j]),
+            specValue: split[j]
+          })
+          skuSpecMap[this.getSpecNameBySpecValue(split[j]).name] = split[j]
+        }
+        skuList.push({
+          skuSpecList: skuSpecSaveList,
+          skuSpecMap: skuSpecMap
+        })
+        skuSpecSaveList = []
+        skuSpecMap = {}
+        console.log('map = ' + JSON.stringify(skuSpecMap))
+      }
+      console.log('value.skuList = ' + JSON.stringify(this.value.skuList))
     },
     handleSyncSkuPrice () {
     },
     handleSpuAttrChange () {
-      fetchSkuSpecListBySpuId({id: this.id}).then(response => {
-        let skuspecList = response.data
-        for (let i = 0; i < skuspecList.length; i++) {
-          this.selectSkuSpecValues.set(skuspecList[i].id, skuspecList[i].memberIds)
+      // console.log('itemId = ' + this.value.itemId)
+      // this.value.itemName = this.getItemNameById(this.value.itemId)
+      if (this.value.itemId[1] == null) {
+        return
+      }
+      this.getSpecList(this.value.itemId[1], this.value.id)
+      // if (this.isEdit) {
+      //   fetchSkuSpecListBySpuId({id: this.id}).then(response => {
+      //     let skuspecList = response.data
+      //     for (let i = 0; i < skuspecList.length; i++) {
+      //       this.selectSkuSpecValues.set(skuspecList[i].id, skuspecList[i].memberIds)
+      //     }
+      //   })
+      //   fetchSpuSpecListBySpuId({id: this.id}).then(response => {
+      //     let spuSpecList = response.data
+      //     let temp = []
+      //     for (let i = 0; i < spuSpecList.length; i++) {
+      //       temp.push(spuSpecList[i].specValueId)
+      //     }
+      //     this.selectSpuSpecValues = temp
+      //   })
+      // }
+    },
+    getSpecNameBySpecValue (specValue) {
+      for (let i = 0; i < this.skuSpecList.length; i++) {
+        for (let j = 0; j < this.skuSpecList[i].specValues.length; j++) {
+          if (specValue === this.skuSpecList[i].specValues[j].name) {
+            return this.skuSpecList[i]
+          }
         }
-      })
-      fetchSpuSpecListBySpuId({id: this.id}).then(response => {
-        let spuSpecList = response.data
-        let temp = []
-        for (let i = 0; i < spuSpecList.length; i++) {
-          temp.push(spuSpecList[i].specValueId)
+      }
+    },
+    getSpecIdBySpecValue (specValue) {
+      for (let i = 0; i < this.skuSpecList.length; i++) {
+        for (let j = 0; j < this.skuSpecList[i].specValues.length; j++) {
+          if (specValue === this.skuSpecList[i].specValues[j].name) {
+            return this.skuSpecList[i].specValues[j].id
+          }
         }
-        this.selectSpuSpecValues = temp
-      })
+      }
     },
     handleRemoveSku (index, row) {
       let list = this.value.skuList

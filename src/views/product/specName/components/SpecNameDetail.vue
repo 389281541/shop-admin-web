@@ -4,7 +4,7 @@
              :rules="rules"
              ref="productSpecNameForm"
              label-width="100px">
-      <el-form-item label="分类名称：" prop="name">
+      <el-form-item label="属性名称：" prop="name">
         <el-input v-model="productSpecName.name"></el-input>
       </el-form-item>
       <el-form-item label="属性类别：" prop="itemId">

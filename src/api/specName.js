@@ -44,12 +44,10 @@ export function deleteSpecName (id) {
   })
 }
 
-export function fetchListByItemId (id) {
+export function fetchListByItemId (data) {
   return request({
     url: '/specName/listByItemId',
     method: 'post',
-    data: {
-      id: id
-    }
+    data: data
   })
 }

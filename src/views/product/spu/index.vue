@@ -209,7 +209,7 @@
     <el-dialog
       title="编辑商品信息"
       :visible.sync="editSkuInfo.dialogVisible"
-      width="40%">
+      width="60%">
       <span>商品编号：</span>
       <span>{{editSkuInfo.spuNo}}</span>
       <el-input placeholder="按sku编号搜索" v-model="editSkuInfo.keyword" size="small" style="width: 50%;margin-left: 20px">
@@ -220,22 +220,20 @@
                 border>
         <el-table-column
           label="SKU编号"
+          width="100"
           align="center">
           <template slot-scope="scope">
             <el-input v-model="scope.row.skuNo"></el-input>
           </template>
         </el-table-column>
-        <template slot-scope="scope">
-          <el-table-column v-for="item in scope.row.skuSpecList"
-            :label="item.specName"
-            :key="item.id"
-            :prop="item.specValue"
-            align="center">
-          </el-table-column>
-        </template>
+        <el-table-column :label="item" v-for="item in headers" :key="item">
+          <template slot-scope="scope">
+            {{scope.row.skuSpecMap[item]}}
+          </template>
+        </el-table-column>
         <el-table-column
           label="商品库存"
-          width="80"
+          width="100"
           align="center">
           <template slot-scope="scope">
             <el-input v-model="scope.row.stock"></el-input>
@@ -243,7 +241,7 @@
         </el-table-column>
         <el-table-column
           label="库存预警值"
-          width="100"
+          width="120"
           align="center">
           <template slot-scope="scope">
             <el-input v-model="scope.row.lowStock"></el-input>
@@ -251,14 +249,14 @@
         </el-table-column>
         <el-table-column
           label="销量"
-          width="100"
+          width="110"
           align="center">
           <template slot-scope="scope">
             <el-input v-model="scope.row.sale" :disabled="true"></el-input>
           </template>
         </el-table-column>
         <el-table-column
-          label="重量"
+          label="重量(kg)"
           width="100"
           align="center">
           <template slot-scope="scope">
@@ -266,23 +264,8 @@
           </template>
         </el-table-column>
         <el-table-column
-          label="尺寸"
-          width="100"
-          align="center">
-          <template slot-scope="scope">
-            <el-select v-model="scope.row.dimension" placeholder="全部" clearable class="input-width">
-              <el-option
-                v-for="item in dimensionOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
-              </el-option>
-            </el-select>
-          </template>
-        </el-table-column>
-        <el-table-column
           label="销售价格"
-          width="80"
+          width="100"
           align="center">
           <template slot-scope="scope">
             <el-input v-model="scope.row.price"></el-input>
@@ -290,7 +273,7 @@
         </el-table-column>
         <el-table-column
           label="原价"
-          width="80"
+          width="100"
           align="center">
           <template slot-scope="scope">
             <el-input v-model="scope.row.originalPrice"></el-input>
@@ -381,28 +364,15 @@ export default {
           value: 'recycle'
         }
       ],
-      dimensionOptions: [
-        {
-          value: 0,
-          label: '小件'
-        },
-        {
-          value: 1,
-          label: '中件'
-        },
-        {
-          value: 2,
-          label: '大件'
-        }
-      ],
       editSkuInfo: {
         dialogVisible: false,
         spuId: null,
         spuNo: '',
         skuList: [],
-        skuSpec: [],
+        specMap: {},
         keyword: null
-      }
+      },
+      headers: []
     }
   },
   created () {
@@ -580,16 +550,21 @@ export default {
     },
     handleShowSkuEditDialog (index, row) {
       this.editSkuInfo.dialogVisible = true
-      this.editSkuInfo.skuId = row.id
+      this.editSkuInfo.spuId = row.id
       this.editSkuInfo.spuNo = row.spuNo
       this.editSkuInfo.keyword = null
       fetchSkuList({id: row.id, keyword: this.editSkuInfo.keyword}).then(response => {
-        this.editSkuInfo.skuList = response.data.records
+        this.editSkuInfo.skuList = response.data
+        this.headers = []
+        // 获取header
+        for (let i = 0; i < this.editSkuInfo.skuList[0].skuSpecList.length; i++) {
+          this.headers.push(this.editSkuInfo.skuList[0].skuSpecList[i].specName)
+        }
       })
     },
     handleSearchEditSku () {
       fetchSkuList({id: this.editSkuInfo.spuId, keyword: this.editSkuInfo.keyword}).then(response => {
-        this.editSkuInfo.skuList = response.data.records
+        this.editSkuInfo.skuList = response.data
       })
     },
     handleEditSkuConfirm () {

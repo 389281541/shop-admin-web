@@ -73,7 +73,7 @@ export default {
   },
   created () {
     if (this.isEdit) {
-      this.id = this.$route.query.id
+      this.value.id = this.$route.query.id
       getSpu(this.id).then(response => {
         this.spuParam = response.data
       })
