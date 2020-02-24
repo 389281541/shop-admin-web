@@ -4,14 +4,14 @@
       <el-form-item label="商品类别：" prop="itemId">
         <el-cascader
           clearable
-          v-model="value.itemId"
+          v-model="selectSpuItemValue"
           @change="handleSpuAttrChange"
           :options="itemOptions">
         </el-cascader>
       </el-form-item>
       <el-form-item label="商品规格：">
         <el-card shadow="never" class="cardBg">
-          <div v-for="skuSpec in skuSpecList" :key="skuSpec.id">
+          <div v-for="skuSpec in skuSpecNameList" :key="skuSpec.id">
             {{skuSpec.name}}：
             <el-checkbox-group v-model="skuSpec.selectSpecValues">
               <el-checkbox v-for="item in skuSpec.specValues" :label="item.name" :key="item.id"
@@ -36,7 +36,7 @@
         </el-table-column>
         <el-table-column
           label="商品库存"
-          width="80"
+          width="100"
           align="center">
           <template slot-scope="scope">
             <el-input v-model="scope.row.stock"></el-input>
@@ -60,7 +60,7 @@
         </el-table-column>
         <el-table-column
           label="销售价格"
-          width="80"
+          width="100"
           align="center">
           <template slot-scope="scope">
             <el-input v-model="scope.row.price"></el-input>
@@ -68,7 +68,7 @@
         </el-table-column>
         <el-table-column
           label="原价"
-          width="80"
+          width="100"
           align="center">
           <template slot-scope="scope">
             <el-input v-model="scope.row.originalPrice"></el-input>
@@ -90,11 +90,6 @@
         type="primary"
         style="margin-top: 20px"
         @click="handleRefreshSkuList">刷新列表
-      </el-button>
-      <el-button
-        type="primary"
-        style="margin-top: 20px"
-        @click="handleSyncSkuPrice">同步价格
       </el-button>
       </el-form-item>
       <el-form-item label="商品图片：">
@@ -154,23 +149,23 @@
       </el-form-item>
       <el-form-item label="商品参数：">
         <el-card shadow="never" class="cardBg">
-          <div v-for="(item,index) in selectSpuSpecValues" :class="{littleMarginTop:index!==0}" :key="item.id">
+          <div v-for="(item,index) in spuSpecNameList" :class="{littleMarginTop:index!==0}" :key="item.id">
             <div class="paramInputLabel">{{item.name}}:</div>
-            <el-select v-if="item.enumeration===1" class="paramInput" v-model="selectSpuSpecValues[index].specValues">
+            <el-select v-if="item.enumeration===1" class="paramInput" v-model="item.selectSpecValues">
               <el-option
-                v-for="item in selectSpuSpecValues[index].specValues"
-                :key="item.id"
-                :label="item.name"
-                :value="item.id">
+                v-for="option in item.specValues"
+                :key="option.id"
+                :label="option.name"
+                :value="option.name">
               </el-option>
             </el-select>
-            <el-input v-else-if="item.input===1" class="paramInput" v-model="selectSpuSpecValues[index].specName"></el-input>
+            <el-input v-else-if="item.input===1" class="paramInput" v-model="item.selectSpecValues"></el-input>
           </div>
         </el-card>
       </el-form-item>
       <el-form-item style="text-align: center">
         <el-button size="medium" @click="handlePrev">上一步，填写商品信息</el-button>
-        <el-button type="primary" size="medium" @click="handleFinishCommit">完成，提交商品</el-button>
+        <el-button type="primary" size="medium" @click="handleNext">下一步，填写商品促销</el-button>
       </el-form-item>
     </el-form>
   </div>
@@ -178,12 +173,13 @@
 <script>
 import {fetchListWithChildren} from '@/api/item'
 import {fetchListByItemId} from '@/api/specName'
+import SingleUpload from '@/components/Upload/singleUpload'
 // import {fetchSkuSpecListBySpuId} from '@/api/skuSpec'
 // import {fetchSpuSpecListBySpuId} from '@/api/spuSpec'
 
 export default {
   name: 'SpuAttrDetail',
-  components: {},
+  components: { SingleUpload },
   props: {
     value: Object,
     isEdit: {
@@ -196,10 +192,10 @@ export default {
       id: null,
       itemId: null,
       itemOptions: [],
-      skuSpecList: [],
-      spuSpecList: [],
+      skuSpecNameList: [],
+      spuSpecNameList: [],
       selectSpuItemValue: null,
-      selectSpuSpecValues: [],
+      // selectSpuSpecValues: [],
       headers: [],
       rules: {
         itemId: [{required: true, message: '请选择商品分类', trigger: 'blur'}]
@@ -217,15 +213,13 @@ export default {
     // this.getSpecList()
   },
   // watch: {
-  //      value.itemId: function (newValue) {
+  //   selectSpuItemValue: function (newValue) {
   //     if (newValue != null && newValue.length === 2) {
   //       this.value.itemId = newValue[1]
   //     } else {
   //       this.value.itemId = null
   //       this.value.itemName = null
   //     }
-  //     this.getSpecList()
-  //     console.log('itemId = ' + this.itemId)
   //   }
   // },
   methods: {
@@ -258,8 +252,8 @@ export default {
     },
     getSpecList (itemId, spuId) {
       fetchListByItemId({itemId: itemId, spuId: spuId}).then(response => {
-        this.skuSpecList = response.data.skuSpecList
-        this.spuSpecList = response.data.spuSpecList
+        this.skuSpecNameList = response.data.skuSpecList
+        this.spuSpecNameList = response.data.spuSpecList
       })
     },
     handleRefreshSkuList () {
@@ -268,11 +262,9 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.refreshskuPics()
         this.refreshSkuList()
+        this.refreshskuPics()
       })
-    },
-    refreshskuPics () {
     },
     refreshSkuList () {
       this.value.skuList = []
@@ -280,12 +272,12 @@ export default {
       let skuList = this.value.skuList
       console.log('init skuList size =' + skuList.length)
       let skuSelectSpecList = []
-      for (let i = 0; i < this.skuSpecList.length; i++) {
-        if (this.skuSpecList[i].selectSpecValues.length === 0) {
+      for (let i = 0; i < this.skuSpecNameList.length; i++) {
+        if (this.skuSpecNameList[i].selectSpecValues.length === 0) {
           continue
         }
-        this.headers.push(this.skuSpecList[i].name)
-        skuSelectSpecList.push(this.skuSpecList[i].selectSpecValues)
+        this.headers.push(this.skuSpecNameList[i].name)
+        skuSelectSpecList.push(this.skuSpecNameList[i].selectSpecValues)
       }
       console.log('headers=' + this.headers)
       if (skuSelectSpecList.length === 0) {
@@ -300,7 +292,6 @@ export default {
         })
         return array
       })
-      console.log('dkeji = ' + result + ', length=' + result.length)
       let skuSpecSaveList = []
       let skuSpecMap = {}
       for (let i = 0; i < result.length; i++) {
@@ -320,50 +311,70 @@ export default {
         })
         skuSpecSaveList = []
         skuSpecMap = {}
-        console.log('map = ' + JSON.stringify(skuSpecMap))
       }
-      console.log('value.skuList = ' + JSON.stringify(this.value.skuList))
     },
-    handleSyncSkuPrice () {
+    refreshskuPics () {
+      this.value.spuImgList = []
+      let spuImgList = this.value.spuImgList
+      for (let i = 0; i < this.value.skuList.length; i++) {
+        let imgUrl = null
+        let coverFlag = null
+        let colorFlag = null
+        let masterFlag = null
+        if (this.isEdit) {
+          // 编辑状态下获取图片
+          imgUrl = this.getSkuPic(this.value.skuList[i].id).imgUrl
+          coverFlag = this.getSkuPic(this.value.skuList[i].id).coverFlag
+          colorFlag = this.getSkuPic(this.value.skuList[i].id).colorFlag
+          masterFlag = this.getSkuPic(this.value.skuList[i].id).masterFlag
+        }
+        spuImgList.push({
+          skuSpecMap: this.value.skuList[i].skuSpecMap,
+          imgUrl: imgUrl,
+          coverFlag: coverFlag,
+          colorFlag: colorFlag,
+          masterFlag: masterFlag
+        })
+      }
+    },
+    getSkuPic (skuId) {
+      let spuImgList = this.value.spuImgList
+      for (let i = 0; i < spuImgList.length; i++) {
+        if (skuId === spuImgList[i].skuId) {
+          return spuImgList[i]
+        }
+      }
     },
     handleSpuAttrChange () {
-      // console.log('itemId = ' + this.value.itemId)
-      // this.value.itemName = this.getItemNameById(this.value.itemId)
-      if (this.value.itemId[1] == null) {
+      this.value.itemId = this.selectSpuItemValue[1]
+      if (this.value.itemId == null) {
         return
       }
-      this.getSpecList(this.value.itemId[1], this.value.id)
-      // if (this.isEdit) {
-      //   fetchSkuSpecListBySpuId({id: this.id}).then(response => {
-      //     let skuspecList = response.data
-      //     for (let i = 0; i < skuspecList.length; i++) {
-      //       this.selectSkuSpecValues.set(skuspecList[i].id, skuspecList[i].memberIds)
-      //     }
-      //   })
-      //   fetchSpuSpecListBySpuId({id: this.id}).then(response => {
-      //     let spuSpecList = response.data
-      //     let temp = []
-      //     for (let i = 0; i < spuSpecList.length; i++) {
-      //       temp.push(spuSpecList[i].specValueId)
-      //     }
-      //     this.selectSpuSpecValues = temp
-      //   })
-      // }
+      this.getSpecList(this.value.itemId, this.value.id)
     },
     getSpecNameBySpecValue (specValue) {
-      for (let i = 0; i < this.skuSpecList.length; i++) {
-        for (let j = 0; j < this.skuSpecList[i].specValues.length; j++) {
-          if (specValue === this.skuSpecList[i].specValues[j].name) {
-            return this.skuSpecList[i]
+      for (let i = 0; i < this.skuSpecNameList.length; i++) {
+        for (let j = 0; j < this.skuSpecNameList[i].specValues.length; j++) {
+          if (specValue === this.skuSpecNameList[i].specValues[j].name) {
+            return this.skuSpecNameList[i]
           }
         }
       }
     },
     getSpecIdBySpecValue (specValue) {
-      for (let i = 0; i < this.skuSpecList.length; i++) {
-        for (let j = 0; j < this.skuSpecList[i].specValues.length; j++) {
-          if (specValue === this.skuSpecList[i].specValues[j].name) {
-            return this.skuSpecList[i].specValues[j].id
+      for (let i = 0; i < this.skuSpecNameList.length; i++) {
+        for (let j = 0; j < this.skuSpecNameList[i].specValues.length; j++) {
+          if (specValue === this.skuSpecNameList[i].specValues[j].name) {
+            return this.skuSpecNameList[i].specValues[j].id
+          }
+        }
+      }
+    },
+    getSpuSpecIdBySpecValue (specValue) {
+      for (let i = 0; i < this.spuSpecNameList.length; i++) {
+        for (let j = 0; j < this.spuSpecNameList[i].specValues.length; j++) {
+          if (specValue === this.spuSpecNameList[i].specValues[j].name) {
+            return this.spuSpecNameList[i].specValues[j].id
           }
         }
       }
@@ -379,7 +390,18 @@ export default {
     handlePrev () {
       this.$emit('prevStep')
     },
-    handleFinishCommit () {
+    handleNext () {
+      this.value.spuSpecList = []
+      for (let i = 0; i < this.spuSpecNameList.length; i++) {
+        this.value.spuSpecList.push({
+          specNameId: this.spuSpecNameList[i].id,
+          specName: this.spuSpecNameList[i].name,
+          specValueId: this.getSpuSpecIdBySpecValue(this.spuSpecNameList[i].selectSpecValues),
+          specValue: this.spuSpecNameList[i].selectSpecValues
+        })
+      }
+      console.log('this.value.spuSpecList = ' + JSON.stringify(this.value.spuSpecList))
+      this.$emit('nextStep')
     }
   }
 }

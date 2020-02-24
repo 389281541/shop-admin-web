@@ -3,7 +3,7 @@
     <el-steps :active="active" finish-status="success" align-center>
       <el-step title="填写商品信息"></el-step>
       <el-step title="填写商品关联属性"></el-step>
-<!--      <el-step title="填写商品促销"></el-step>-->
+      <el-step title="填写商品促销"></el-step>
     </el-steps>
     <spu-info-detail
       v-show="showStatus[0]"
@@ -18,13 +18,13 @@
       @nextStep="nextStep"
       @prevStep="prevStep">
     </spu-attr-detail>
-    <spu-info-detail
+    <spu-sale-detail
       v-show="showStatus[2]"
       v-model="spuParam"
       :is-edit="isEdit"
       @prevStep="prevStep"
       @finishCommit="finishCommit">
-    </spu-info-detail>
+    </spu-sale-detail>
   </el-card>
 </template>
 <script>
@@ -50,9 +50,15 @@ const defaultSpuParam = {
   'auditStatus': null,
   'sortId': null,
   'recommendStatus': null,
+  'useIntegrationLimit': null,
+  'promotionPerLimit': null,
+  'promotionType': null,
+  'promotionStartTime': null,
+  'promotionEndTime': null,
   'skuList': [],
   'spuImgList': [],
-  'spuSpecList': []
+  'spuSpecList': [],
+  'spuFullReductionList': [{fullPrice: 0, reducePrice: 0}]
 }
 export default {
   name: 'SpuDetail',
@@ -68,7 +74,7 @@ export default {
       id: null,
       active: 0,
       spuParam: Object.assign({}, defaultSpuParam),
-      showStatus: [true, false, false, false]
+      showStatus: [true, false, false]
     }
   },
   created () {
