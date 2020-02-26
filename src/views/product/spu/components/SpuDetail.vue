@@ -32,33 +32,40 @@ import SpuInfoDetail from './SpuInfoDetail'
 import SpuAttrDetail from './SpuAttrDetail'
 import SpuSaleDetail from './SpuSaleDetail'
 import {createSpu, getSpu, updateSpu} from '@/api/spu'
+import {fetchListByItemId} from '@/api/specName'
 
 const defaultSpuParam = {
-  'id': null,
-  'name': null,
-  'spuNo': null,
-  'brandId': null,
-  'brandName': null,
-  'itemId': null,
-  'itemName': null,
-  'shopId': null,
-  'shopName': null,
-  'sale': null,
-  'unit': null,
-  'description': null,
-  'saleStatus': null,
-  'auditStatus': null,
-  'sortId': null,
-  'recommendStatus': null,
-  'useIntegrationLimit': null,
-  'promotionPerLimit': null,
-  'promotionType': null,
-  'promotionStartTime': null,
-  'promotionEndTime': null,
-  'skuList': [],
-  'spuImgList': [],
-  'spuSpecList': [],
-  'spuFullReductionList': [{fullPrice: 0, reducePrice: 0}]
+  id: null,
+  name: null,
+  spuNo: null,
+  brandId: null,
+  brandName: null,
+  itemId: null,
+  parentItemId: null,
+  itemName: null,
+  shopId: null,
+  shopName: null,
+  sale: null,
+  unit: null,
+  description: null,
+  saleStatus: null,
+  auditStatus: null,
+  sortId: null,
+  recommendStatus: null,
+  useIntegrationLimit: null,
+  promotionPerLimit: null,
+  promotionType: null,
+  promotionStartTime: null,
+  promotionEndTime: null,
+  skuList: [],
+  spuImgList: [],
+  spuSpecList: [],
+  spuFullReductionList: [{fullPrice: 0, reducePrice: 0}],
+  attrHeaders: [],
+  skuSpecNameList: [],
+  spuSpecNameList: []
+  // ,
+  // selectSpuItemValue: []
 }
 export default {
   name: 'SpuDetail',
@@ -74,14 +81,25 @@ export default {
       id: null,
       active: 0,
       spuParam: Object.assign({}, defaultSpuParam),
-      showStatus: [true, false, false]
+      showStatus: [true, false, false],
+      showAttr: false
     }
   },
   created () {
     if (this.isEdit) {
-      this.value.id = this.$route.query.id
+      this.spuParam.id = this.$route.query.id
+      this.id = this.spuParam.id
+      this.spuParam.showAttr = false
       getSpu(this.id).then(response => {
         this.spuParam = response.data
+        this.getSpecList(this.spuParam.itemId, this.spuParam.id)
+        // this.spuParam.selectSpuItemValue = []
+        // this.spuParam.selectSpuItemValue.push(this.spuParam.parentItemId)
+        // this.spuParam.selectSpuItemValue.push(this.spuParam.itemId)
+        this.spuParam.attrHeaders = []
+        for (let i = 0; i < this.spuParam.skuList[0].skuSpecList.length; i++) {
+          this.spuParam.attrHeaders.push(this.spuParam.skuList[0].skuSpecList[i].specName)
+        }
       })
     }
   },
@@ -132,6 +150,13 @@ export default {
             location.reload()
           })
         }
+      })
+    },
+    getSpecList (itemId, spuId) {
+      fetchListByItemId({itemId: itemId, spuId: spuId}).then(response => {
+        this.spuParam.skuSpecNameList = response.data.skuSpecList
+        this.spuParam.spuSpecNameList = response.data.spuSpecList
+        this.spuParam.showAttr = true
       })
     }
   }

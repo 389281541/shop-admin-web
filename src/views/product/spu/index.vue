@@ -98,7 +98,7 @@
                 v-loading="listLoading"
                 border>
         <el-table-column type="selection" width="60" align="center"></el-table-column>
-        <el-table-column label="编号" width="100" align="center">
+        <el-table-column label="编号" width="120" align="center">
           <template slot-scope="scope">{{scope.row.spuNo}}</template>
         </el-table-column>
         <el-table-column label="商品名称" align="center">
@@ -220,7 +220,7 @@
                 border>
         <el-table-column
           label="SKU编号"
-          width="100"
+          width="180"
           align="center">
           <template slot-scope="scope">
             <el-input v-model="scope.row.skuNo"></el-input>
@@ -253,14 +253,6 @@
           align="center">
           <template slot-scope="scope">
             <el-input v-model="scope.row.sale" :disabled="true"></el-input>
-          </template>
-        </el-table-column>
-        <el-table-column
-          label="重量(kg)"
-          width="100"
-          align="center">
-          <template slot-scope="scope">
-            <el-input v-model="scope.row.weight"></el-input>
           </template>
         </el-table-column>
         <el-table-column
@@ -485,7 +477,7 @@ export default {
       })
     },
     handleUpdate (index, row) {
-      this.$router.push({path: '/spu/update', query: {id: row.id}})
+      this.$router.push({path: '/product/updateSpu', query: {id: row.id}})
     },
     handleDelete (index, row) {
       this.$confirm('是否要删除该商品', '提示', {
@@ -581,7 +573,7 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        updateSkuList(this.editSkuInfo.skuList).then(response => {
+        updateSkuList({skuUpdateDTOList: this.editSkuInfo.skuList}).then(response => {
           this.$message({
             message: '修改成功',
             type: 'success',

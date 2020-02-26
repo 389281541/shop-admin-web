@@ -4,6 +4,9 @@
       <el-form-item label="积分购买限制：">
         <el-input v-model="value.useIntegrationLimit"></el-input>
       </el-form-item>
+      <el-form-item label="促销限购数量：">
+        <el-input v-model="value.promotionPerLimit"></el-input>
+      </el-form-item>
       <el-form-item label="选择优惠方式：">
         <el-radio-group v-model="value.promotionType" size="small">
           <el-radio-button :label="0">无优惠</el-radio-button>

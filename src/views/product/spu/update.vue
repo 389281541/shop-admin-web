@@ -1,5 +1,5 @@
 <template>
-  <spu-detail :is-edit='true'></spu-detail>
+  <spu-detail :is-edit=true></spu-detail>
 </template>
 <script>
 import SpuDetail from './components/SpuDetail'
