@@ -32,7 +32,6 @@ import SpuInfoDetail from './SpuInfoDetail'
 import SpuAttrDetail from './SpuAttrDetail'
 import SpuSaleDetail from './SpuSaleDetail'
 import {createSpu, getSpu, updateSpu} from '@/api/spu'
-import {fetchListByItemId} from '@/api/specName'
 
 const defaultSpuParam = {
   id: null,
@@ -60,12 +59,7 @@ const defaultSpuParam = {
   skuList: [],
   spuImgList: [],
   spuSpecList: [],
-  spuFullReductionList: [{fullPrice: 0, reducePrice: 0}],
-  attrHeaders: [],
-  skuSpecNameList: [],
-  spuSpecNameList: []
-  // ,
-  // selectSpuItemValue: []
+  spuFullReductionList: [{fullPrice: 0, reducePrice: 0}]
 }
 export default {
   name: 'SpuDetail',
@@ -81,25 +75,15 @@ export default {
       id: null,
       active: 0,
       spuParam: Object.assign({}, defaultSpuParam),
-      showStatus: [true, false, false],
-      showAttr: false
+      showStatus: [true, false, false]
     }
   },
   created () {
     if (this.isEdit) {
       this.spuParam.id = this.$route.query.id
       this.id = this.spuParam.id
-      this.spuParam.showAttr = false
       getSpu(this.id).then(response => {
         this.spuParam = response.data
-        this.getSpecList(this.spuParam.itemId, this.spuParam.id)
-        // this.spuParam.selectSpuItemValue = []
-        // this.spuParam.selectSpuItemValue.push(this.spuParam.parentItemId)
-        // this.spuParam.selectSpuItemValue.push(this.spuParam.itemId)
-        this.spuParam.attrHeaders = []
-        for (let i = 0; i < this.spuParam.skuList[0].skuSpecList.length; i++) {
-          this.spuParam.attrHeaders.push(this.spuParam.skuList[0].skuSpecList[i].specName)
-        }
       })
     }
   },
@@ -150,13 +134,6 @@ export default {
             location.reload()
           })
         }
-      })
-    },
-    getSpecList (itemId, spuId) {
-      fetchListByItemId({itemId: itemId, spuId: spuId}).then(response => {
-        this.spuParam.skuSpecNameList = response.data.skuSpecList
-        this.spuParam.spuSpecNameList = response.data.spuSpecList
-        this.spuParam.showAttr = true
       })
     }
   }

@@ -16,7 +16,7 @@
       </el-form-item>
       <el-form-item label="商品规格：">
         <el-card shadow="never" class="cardBg">
-          <div v-if="value.showAttr" v-for="skuSpec in value.skuSpecNameList" :key="skuSpec.id">
+          <div v-for="skuSpec in skuSpecNameList" :key="skuSpec.id">
             {{skuSpec.name}}：
             <el-checkbox-group v-model="skuSpec.selectSpecValues">
               <el-checkbox v-for="item in skuSpec.specValues" :label="item.name" :key="item.id"
@@ -35,7 +35,7 @@
             <el-input v-model="scope.row.skuNo"></el-input>
           </template>
         </el-table-column>
-        <el-table-column :label="item" v-for="item in value.attrHeaders" :key="item">
+        <el-table-column :label="item" v-for="item in headers" :key="item">
           <template slot-scope="scope">
             {{scope.row.skuSpecMap[item]}}
           </template>
@@ -102,7 +102,7 @@
         <el-table style="width: 100%;margin-top: 20px"
                   :data="value.spuImgList"
                   border>
-          <el-table-column :label="item" v-for="item in value.attrHeaders" :key="item">
+          <el-table-column :label="item" v-for="item in headers" :key="item">
             <template slot-scope="scope">
               {{scope.row.skuSpecMap[item]}}
             </template>
@@ -155,9 +155,9 @@
       </el-form-item>
       <el-form-item label="商品参数：">
         <el-card shadow="never" class="cardBg">
-          <div v-if="value.showAttr" v-for="(item,index) in value.spuSpecNameList" :class="{littleMarginTop:index!==0}" :key="item.id">
+          <div v-for="(item,index) in spuSpecNameList" :class="{littleMarginTop:index!==0}" :key="item.id">
             <div class="paramInputLabel">{{item.name}}:</div>
-            <el-select v-if="item.enumeration===1" class="paramInput" v-model="item.selectSpecValues">
+            <el-select v-if="item.enumeration===1" class="paramInput" v-model="item.selectSpecValues[0]">
               <el-option
                 v-for="option in item.specValues"
                 :key="option.id"
@@ -165,7 +165,7 @@
                 :value="option.name">
               </el-option>
             </el-select>
-            <el-input v-else-if="item.input===1" class="paramInput" v-model="item.selectSpecValues"></el-input>
+            <el-input v-else-if="item.input===1" class="paramInput" v-model="item.selectSpecValues[0]"></el-input>
           </div>
         </el-card>
       </el-form-item>
@@ -179,8 +179,6 @@
 <script>
 import {fetchListWithChildren, fetchAllSubItemList} from '@/api/item'
 import SingleUpload from '@/components/Upload/singleUpload'
-// import {fetchSkuSpecListBySpuId} from '@/api/skuSpec'
-// import {fetchSpuSpecListBySpuId} from '@/api/spuSpec'
 import {fetchListByItemId} from '@/api/specName'
 export default {
   name: 'SpuAttrDetail',
@@ -198,45 +196,31 @@ export default {
       itemId: null,
       itemName: null,
       itemOptions: [],
-      showCard: false,
       checked: false,
       // 编辑模式时是否初始化成功
       hasEditCreated: false,
       selectItemValue: [],
       itemSubOptions: [],
-      // selectSpuSpecValues: [],
+      headers: [],
+      skuSpecNameList: [],
+      spuSpecNameList: [],
       rules: {
         itemId: [{required: true, message: '请选择商品分类', trigger: 'blur'}]
       }
     }
   },
   computed: {
-    productId () {
-      return this.value.id
+    valueItemId () {
+      return this.value.itemId
     }
   },
   created () {
     // 更新
-    this.showCard = false
     this.getItemOptions()
     this.getSubItemOptions()
-    this.value.showAttr = false
-    console.log('attr detail create=' + JSON.stringify(this.value.skuSpecNameList))
-    // this.getAttrSpecList()
   },
-  // watch: {
-  //   selectSpuItemValue: function (newValue) {
-  //     if (newValue != null && newValue.length === 2) {
-  //       this.value.itemId = newValue[1]
-  //       this.value.itemName = this.getItemNameById(this.itemId)
-  //     } else {
-  //       this.value.itemId = null
-  //       this.value.itemName = null
-  //     }
-  //   }
-  // },
   watch: {
-    productId: function (newValue) {
+    valueItemId: function (newValue) {
       if (!this.isEdit) return
       if (this.hasEditCreated) return
       if (newValue === undefined || newValue === null || newValue === 0) {
@@ -244,20 +228,11 @@ export default {
       }
       this.handleEditCreated()
     }
-    // ,
-    // selectItemValue: function (newValue) {
-    //   if (newValue != null && newValue.length === 2) {
-    //     // this.value.itemId = newValue[1]
-    //     // this.value.itemName = this.getItemNameById(this.itemId)
-    //     this.value.selectSpuItemValue[0] = newValue[0]
-    //     this.value.selectSpuItemValue[1] = newValue[1]
-    //   }
-    // }
   },
   methods: {
     handleEditCreated () {
       if (this.value.itemId != null) {
-        // this.handleSpuAttrChange(this.value.itemId)
+        this.handleSpuAttrChange(this.value.itemId)
       }
       this.hasEditCreated = true
     },
@@ -304,19 +279,22 @@ export default {
       })
     },
     refreshSkuList () {
+      if (this.skuSpecNameList === null || this.spuSpecNameList === null) {
+        return
+      }
       this.value.skuList = []
-      this.value.attrHeaders = []
+      this.headers = []
       let skuList = this.value.skuList
       console.log('init skuList size =' + skuList.length)
       let skuSelectSpecList = []
-      for (let i = 0; i < this.value.skuSpecNameList.length; i++) {
-        if (this.value.skuSpecNameList[i].selectSpecValues.length === 0) {
+      for (let i = 0; i < this.skuSpecNameList.length; i++) {
+        if (this.skuSpecNameList[i].selectSpecValues.length === 0) {
           continue
         }
-        this.value.attrHeaders.push(this.value.skuSpecNameList[i].name)
-        skuSelectSpecList.push(this.value.skuSpecNameList[i].selectSpecValues)
+        this.headers.push(this.skuSpecNameList[i].name)
+        skuSelectSpecList.push(this.skuSpecNameList[i].selectSpecValues)
       }
-      console.log('headers=' + this.value.attrHeaders)
+      console.log('headers=' + this.headers)
       if (skuSelectSpecList.length === 0) {
         return
       }
@@ -369,39 +347,45 @@ export default {
     },
     handleSpuAttrChange () {
       let itemId = this.value.itemId
-      this.getAttrSpecList(itemId, this.value.id)
+      this.getSpecList(itemId, this.value.id)
       this.value.itemName = this.getItemNameById(itemId)
     },
-    getAttrSpecList (itemId, spuId) {
+    getSpecList (itemId, spuId) {
       fetchListByItemId({itemId: itemId, spuId: spuId}).then(response => {
-        this.value.skuSpecNameList = response.data.skuSpecList
-        this.value.spuSpecNameList = response.data.spuSpecList
-        this.showCard = true
+        this.skuSpecNameList = response.data.skuSpecList
+        this.spuSpecNameList = response.data.spuSpecList
+        if (this.skuSpecNameList === null || this.spuSpecNameList === null) {
+          return
+        }
+        this.headers = []
+        for (let i = 0; i < this.value.skuList[0].skuSpecList.length; i++) {
+          this.headers.push(this.value.skuList[0].skuSpecList[i].specName)
+        }
       })
     },
     getSpecNameBySpecValue (specValue) {
-      for (let i = 0; i < this.value.skuSpecNameList.length; i++) {
-        for (let j = 0; j < this.value.skuSpecNameList[i].specValues.length; j++) {
-          if (specValue === this.value.skuSpecNameList[i].specValues[j].name) {
-            return this.value.skuSpecNameList[i]
+      for (let i = 0; i < this.skuSpecNameList.length; i++) {
+        for (let j = 0; j < this.skuSpecNameList[i].specValues.length; j++) {
+          if (specValue === this.skuSpecNameList[i].specValues[j].name) {
+            return this.skuSpecNameList[i]
           }
         }
       }
     },
     getSpecIdBySpecValue (specValue) {
-      for (let i = 0; i < this.value.skuSpecNameList.length; i++) {
-        for (let j = 0; j < this.value.skuSpecNameList[i].specValues.length; j++) {
-          if (specValue === this.value.skuSpecNameList[i].specValues[j].name) {
-            return this.value.skuSpecNameList[i].specValues[j].id
+      for (let i = 0; i < this.skuSpecNameList.length; i++) {
+        for (let j = 0; j < this.skuSpecNameList[i].specValues.length; j++) {
+          if (specValue === this.skuSpecNameList[i].specValues[j].name) {
+            return this.skuSpecNameList[i].specValues[j].id
           }
         }
       }
     },
     getSpuSpecIdBySpecValue (specValue) {
-      for (let i = 0; i < this.value.spuSpecNameList.length; i++) {
-        for (let j = 0; j < this.value.spuSpecNameList[i].specValues.length; j++) {
-          if (specValue === this.value.spuSpecNameList[i].specValues[j].name) {
-            return this.value.spuSpecNameList[i].specValues[j].id
+      for (let i = 0; i < this.spuSpecNameList.length; i++) {
+        for (let j = 0; j < this.spuSpecNameList[i].specValues.length; j++) {
+          if (specValue === this.spuSpecNameList[i].specValues[j].name) {
+            return this.spuSpecNameList[i].specValues[j].id
           }
         }
       }
@@ -418,15 +402,14 @@ export default {
       this.$emit('prevStep')
     },
     handleNext () {
-      console.log('attr skuSpecNameList=' + JSON.stringify(this.value.skuSpecNameList))
       this.value.spuSpecList = []
-      if (this.value.spuSpecNameList !== null) {
-        for (let i = 0; i < this.value.spuSpecNameList.length; i++) {
+      if (this.spuSpecNameList !== null) {
+        for (let i = 0; i < this.spuSpecNameList.length; i++) {
           this.value.spuSpecList.push({
-            specNameId: this.value.spuSpecNameList[i].id,
-            specName: this.value.spuSpecNameList[i].name,
-            specValueId: this.getSpuSpecIdBySpecValue(this.value.spuSpecNameList[i].selectSpecValues),
-            specValue: this.value.spuSpecNameList[i].selectSpecValues
+            specNameId: this.spuSpecNameList[i].id,
+            specName: this.spuSpecNameList[i].name,
+            specValueId: this.getSpuSpecIdBySpecValue(this.spuSpecNameList[i].selectSpecValues[0]),
+            specValue: this.spuSpecNameList[i].selectSpecValues[0]
           })
         }
       }
