@@ -49,15 +49,15 @@
       <el-form-item label="商品上架：">
         <el-switch
           v-model="value.saleStatus"
-          :active-value="0"
-          :inactive-value="1">
+          :active-value="1"
+          :inactive-value="0">
         </el-switch>
       </el-form-item>
       <el-form-item label="商品推荐：">
         <el-switch
           v-model="value.recommendStatus"
-          :active-value="0"
-          :inactive-value="1">
+          :active-value="1"
+          :inactive-value="0">
         </el-switch>
       </el-form-item>
       <el-form-item label="排序：" prop="sortId">

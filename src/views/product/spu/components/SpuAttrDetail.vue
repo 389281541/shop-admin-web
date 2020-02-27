@@ -332,16 +332,8 @@ export default {
       this.value.spuImgList = []
       let spuImgList = this.value.spuImgList
       for (let i = 0; i < this.value.skuList.length; i++) {
-        let imgUrl = null
-        let coverFlag = null
-        let colorFlag = null
-        let masterFlag = null
         spuImgList.push({
-          skuSpecMap: this.value.skuList[i].skuSpecMap,
-          imgUrl: imgUrl,
-          coverFlag: coverFlag,
-          colorFlag: colorFlag,
-          masterFlag: masterFlag
+          skuSpecMap: this.value.skuList[i].skuSpecMap
         })
       }
     },
@@ -358,8 +350,10 @@ export default {
           return
         }
         this.headers = []
-        for (let i = 0; i < this.value.skuList[0].skuSpecList.length; i++) {
-          this.headers.push(this.value.skuList[0].skuSpecList[i].specName)
+        if (this.isEdit) {
+          for (let i = 0; i < this.value.skuList[0].skuSpecList.length; i++) {
+            this.headers.push(this.value.skuList[0].skuSpecList[i].specName)
+          }
         }
       })
     },
