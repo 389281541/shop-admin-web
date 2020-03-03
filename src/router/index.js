@@ -244,6 +244,26 @@ export const constantRouterMap = [
         component: () => import('@/views/flash/flashSpuList'),
         meta: {title: '秒杀商品列表', icon: 'flash'},
         hidden: true
+      },
+      {
+        path: 'homeAdvertise',
+        name: 'homeAdvertise',
+        component: () => import('@/views/advertise/index'),
+        meta: {title: '广告位置设置', icon: 'adv'}
+      },
+      {
+        path: 'addHomeAdvertise',
+        name: 'addHomeAdvertise',
+        component: () => import('@/views/advertise/add'),
+        meta: {title: '添加广告信息'},
+        hidden: true
+      },
+      {
+        path: 'updateHomeAdvertise',
+        name: 'updateHomeAdvertise',
+        component: () => import('@/views/advertise/update'),
+        meta: {title: '修改广告信息'},
+        hidden: true
       }
     ]
   },

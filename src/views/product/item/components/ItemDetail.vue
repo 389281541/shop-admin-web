@@ -17,7 +17,7 @@
           </el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="类别编号：">
+      <el-form-item label="类别编号：" prop="itemNo" placeholder="请输入10000-20000范围的数字">
         <el-input v-model="productItem.itemNo"></el-input>
       </el-form-item>
       <el-form-item>
