@@ -249,7 +249,7 @@ export const constantRouterMap = [
         path: 'homeAdvertise',
         name: 'homeAdvertise',
         component: () => import('@/views/advertise/index'),
-        meta: {title: '广告位置设置', icon: 'adv'}
+        meta: {title: '广告设置', icon: 'adv'}
       },
       {
         path: 'addHomeAdvertise',

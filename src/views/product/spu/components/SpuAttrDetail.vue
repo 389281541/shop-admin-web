@@ -35,6 +35,14 @@
             <el-input v-model="scope.row.skuNo"></el-input>
           </template>
         </el-table-column>
+          <el-table-column
+            label="SKU名称"
+            width="150"
+            align="center">
+            <template slot-scope="scope">
+              <el-input v-model="scope.row.skuName"></el-input>
+            </template>
+          </el-table-column>
         <el-table-column :label="item" v-for="item in headers" :key="item">
           <template slot-scope="scope">
             {{scope.row.skuSpecMap[item]}}
@@ -122,8 +130,8 @@
             <template slot-scope="scope">
               <el-switch
                 v-model="scope.row.coverFlag"
-                :active-value="0"
-                :inactive-value="1">
+                :active-value="1"
+                :inactive-value="0">
               </el-switch>
             </template>
           </el-table-column>
@@ -134,8 +142,8 @@
             <template slot-scope="scope">
               <el-switch
                 v-model="scope.row.masterFlag"
-                :active-value="0"
-                :inactive-value="1">
+                :active-value="1"
+                :inactive-value="0">
               </el-switch>
             </template>
           </el-table-column>
@@ -146,9 +154,20 @@
             <template slot-scope="scope">
               <el-switch
                 v-model="scope.row.colorFlag"
-                :active-value="0"
-                :inactive-value="1">
+                :active-value="1"
+                :inactive-value="0">
               </el-switch>
+            </template>
+          </el-table-column>
+          <el-table-column
+            label="操作"
+            width="80"
+            align="center">
+            <template slot-scope="scope">
+              <el-button
+                type="text"
+                @click="handleRemoveSpuImg(scope.$index, scope.row)">删除
+              </el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -322,7 +341,8 @@ export default {
         }
         skuList.push({
           skuSpecList: skuSpecSaveList,
-          skuSpecMap: skuSpecMap
+          skuSpecMap: skuSpecMap,
+          skuName: result[i]
         })
         skuSpecSaveList = []
         skuSpecMap = {}
@@ -336,6 +356,12 @@ export default {
           skuSpecMap: this.value.skuList[i].skuSpecMap
         })
       }
+      spuImgList.push({
+        skuSpecMap: this.value.skuList[0].skuSpecMap,
+        masterFlag: 1,
+        colorFlag: 0,
+        coverFlag: 0
+      })
     },
     handleSpuAttrChange () {
       let itemId = this.value.itemId
@@ -386,6 +412,14 @@ export default {
     },
     handleRemoveSku (index, row) {
       let list = this.value.skuList
+      if (list.length === 1) {
+        list.pop()
+      } else {
+        list.splice(index, 1)
+      }
+    },
+    handleRemoveSpuImg (index, row) {
+      let list = this.value.spuImgList
       if (list.length === 1) {
         list.pop()
       } else {
