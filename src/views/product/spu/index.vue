@@ -101,7 +101,7 @@
         <el-table-column label="编号" width="120" align="center">
           <template slot-scope="scope">{{scope.row.spuNo}}</template>
         </el-table-column>
-        <el-table-column label="商品名称" align="center">
+        <el-table-column label="商品名称" width="200" align="center">
           <template slot-scope="scope">
             <p>{{scope.row.name}}</p>
           </template>
@@ -111,7 +111,7 @@
             <p>{{scope.row.brandName}}</p>
           </template>
         </el-table-column>
-        <el-table-column label="商品类别" width="120" align="center">
+        <el-table-column label="商品类别" width="80" align="center">
           <template slot-scope="scope">
             <p>{{scope.row.itemName}}</p>
           </template>
@@ -151,7 +151,7 @@
             <el-button type="primary" icon="el-icon-edit" @click="handleShowSkuEditDialog(scope.$index, scope.row)" circle></el-button>
           </template>
         </el-table-column>
-        <el-table-column label="排序" width="100" align="center">
+        <el-table-column label="排序" width="60" align="center">
           <template slot-scope="scope">{{scope.row.sortId}}</template>
         </el-table-column>
         <el-table-column label="审核状态" width="100" align="center">
