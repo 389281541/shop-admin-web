@@ -77,16 +77,16 @@
       </div>
       <div class="table-layout">
         <el-row>
-          <el-col :span="6" class="table-cell-title">收货人</el-col>
-          <el-col :span="6" class="table-cell-title">手机号码</el-col>
-          <el-col :span="6" class="table-cell-title">邮政编码</el-col>
-          <el-col :span="6" class="table-cell-title">收货地址</el-col>
+          <el-col :span="4" class="table-cell-title">收货人</el-col>
+          <el-col :span="4" class="table-cell-title">手机号码</el-col>
+          <el-col :span="4" class="table-cell-title">邮政编码</el-col>
+          <el-col :span="12" class="table-cell-title">收货地址</el-col>
         </el-row>
         <el-row>
-          <el-col :span="6" class="table-cell">{{order.receiverName}}</el-col>
-          <el-col :span="6" class="table-cell">{{order.receiverPhone}}</el-col>
-          <el-col :span="6" class="table-cell">{{order.receiverPostCode}}</el-col>
-          <el-col :span="6" class="table-cell">{{order | formatAddress}}</el-col>
+          <el-col :span="4" class="table-cell">{{order.receiverName}}</el-col>
+          <el-col :span="4" class="table-cell">{{order.receiverPhone}}</el-col>
+          <el-col :span="4" class="table-cell">{{order.receiverPostCode}}</el-col>
+          <el-col :span="12" class="table-cell">{{order | formatAddress}}</el-col>
         </el-row>
       </div>
       <div style="margin-top: 20px">
@@ -126,12 +126,12 @@
         </el-table-column>
         <el-table-column label="小计" width="120" align="center">
           <template slot-scope="scope">
-            ￥{{scope.row.price*scope.row.quantity}}
+            ￥{{(scope.row.price * scope.row.quantity).toFixed(2)}}
           </template>
         </el-table-column>
       </el-table>
       <div style="float: right; margin: 20px">
-        合计：<span class="color-danger">￥{{order.totalAmount}}</span>
+        合计：<span class="color-danger">￥{{(order.totalAmount + order.promotionAmount + order.integrationAmount + order.couponAmount - order.deliverFee).toFixed(2)}}</span>
       </div>
       <div style="margin-top: 60px">
         <svg-icon icon-class="marker" style="color: #606266"></svg-icon>
@@ -141,29 +141,29 @@
         <el-row>
           <el-col :span="6" class="table-cell-title">商品合计</el-col>
           <el-col :span="6" class="table-cell-title">运费</el-col>
-          <el-col :span="6" class="table-cell-title">优惠券</el-col>
+          <el-col :span="6" class="table-cell-title">订单总金额</el-col>
           <el-col :span="6" class="table-cell-title">积分抵扣</el-col>
         </el-row>
         <el-row>
-          <el-col :span="6" class="table-cell">￥{{order.totalAmount}}</el-col>
-          <el-col :span="6" class="table-cell">￥{{order.deliverFee}}</el-col>
-          <el-col :span="6" class="table-cell">-￥{{order.couponAmount}}</el-col>
-          <el-col :span="6" class="table-cell">-￥{{order.integrationAmount}}</el-col>
+          <el-col :span="6" class="table-cell">￥{{(order.totalAmount + order.promotionAmount + order.integrationAmount + order.couponAmount - order.deliverFee).toFixed(2)}}</el-col>
+          <el-col :span="6" class="table-cell">￥{{order.deliverFee.toFixed(2)}}</el-col>
+          <el-col :span="6" class="table-cell">
+            <span class="color-danger">￥{{(order.totalAmount  + order.promotionAmount + order.integrationAmount + order.couponAmount).toFixed(2)}}</span>
+          </el-col>
+          <el-col :span="6" class="table-cell">-￥{{order.integrationAmount.toFixed(2)}}</el-col>
         </el-row>
         <el-row>
           <el-col :span="6" class="table-cell-title">活动优惠</el-col>
           <el-col :span="6" class="table-cell-title">折扣金额</el-col>
-          <el-col :span="6" class="table-cell-title">订单总金额</el-col>
+          <el-col :span="6" class="table-cell-title">优惠券</el-col>
           <el-col :span="6" class="table-cell-title">应付款金额</el-col>
         </el-row>
         <el-row>
-          <el-col :span="6" class="table-cell">-￥{{order.promotionAmount}}</el-col>
+          <el-col :span="6" class="table-cell">-￥{{order.promotionAmount.toFixed(2)}}</el-col>
           <el-col :span="6" class="table-cell">暂无</el-col>
+          <el-col :span="6" class="table-cell">-￥{{order.couponAmount.toFixed(2)}}</el-col>
           <el-col :span="6" class="table-cell">
-            <span class="color-danger">￥{{order.totalAmount + order.deliverFee}}</span>
-          </el-col>
-          <el-col :span="6" class="table-cell">
-            <span class="color-danger">￥{{order.totalAmount + order.deliverFee - order.promotionAmount}}</span>
+            <span class="color-danger">￥{{order.totalAmount.toFixed(2)}}</span>
           </el-col>
         </el-row>
       </div>
@@ -208,33 +208,33 @@
         <el-row>
           <el-col :span="6" class="table-cell-title">商品合计</el-col>
           <el-col :span="6" class="table-cell-title">运费</el-col>
-          <el-col :span="6" class="table-cell-title">优惠券</el-col>
+          <el-col :span="6" class="table-cell-title">订单总金额</el-col>
           <el-col :span="6" class="table-cell-title">积分抵扣</el-col>
         </el-row>
         <el-row>
-          <el-col :span="6" class="table-cell">￥{{order.totalAmount}}</el-col>
+          <el-col :span="6" class="table-cell">￥{{(order.totalAmount + order.promotionAmount + order.integrationAmount + order.couponAmount - order.deliverFee).toFixed(2)}}</el-col>
           <el-col :span="6" class="table-cell">
             <el-input v-model.number="moneyInfo.deliverFee" size="mini"><template slot="prepend">￥</template></el-input>
           </el-col>
-          <el-col :span="6" class="table-cell">-￥{{order.couponAmount}}</el-col>
-          <el-col :span="6" class="table-cell">-￥{{order.integrationAmount}}</el-col>
+          <el-col :span="6" class="table-cell">
+            <span class="color-danger">￥{{(order.totalAmount + order.promotionAmount + order.integrationAmount + order.couponAmount).toFixed(2)}}</span>
+          </el-col>
+          <el-col :span="6" class="table-cell">-￥{{order.integrationAmount.toFixed(2)}}</el-col>
         </el-row>
         <el-row>
           <el-col :span="6" class="table-cell-title">折扣金额</el-col>
           <el-col :span="6" class="table-cell-title">活动优惠</el-col>
-          <el-col :span="6" class="table-cell-title">订单总金额</el-col>
+          <el-col :span="6" class="table-cell-title">优惠券</el-col>
           <el-col :span="6" class="table-cell-title">应付款金额</el-col>
         </el-row>
         <el-row>
-          <el-col :span="6" class="table-cell">-￥{{order.discountAmount}}</el-col>
+          <el-col :span="6" class="table-cell">{{order.discountAmount | formatNull}}</el-col>
           <el-col :span="6" class="table-cell">
             <el-input v-model.number="moneyInfo.promotionAmount" size="mini"><template slot="prepend">￥</template></el-input>
           </el-col>
+          <el-col :span="6" class="table-cell">-￥{{order.couponAmount.toFixed(2)}}</el-col>
           <el-col :span="6" class="table-cell">
-            <span class="color-danger">￥{{order.totalAmount+moneyInfo.deliverFee}}</span>
-          </el-col>
-          <el-col :span="6" class="table-cell">
-            <span class="color-danger">￥{{order.totalAmount+moneyInfo.deliverFee - moneyInfo.promotionAmount}}</span>
+            <span class="color-danger">{{order.totalAmount.toFixed(2) | formatNull}}</span>
           </el-col>
         </el-row>
       </div>
@@ -313,7 +313,7 @@ export default {
     }
   },
   created () {
-    this.id = this.list = this.$route.query.id
+    this.id = this.$route.query.id
     getOrder(this.id).then(response => {
       this.order = response.data
     })
@@ -336,12 +336,12 @@ export default {
       }
     },
     formatPayType (value) {
-      if (value === 1) {
+      if (value === 0) {
         return '支付宝'
-      } else if (value === 2) {
+      } else if (value === 1) {
         return '微信'
       } else {
-        return '未支付'
+        return '货到付款'
       }
     },
     formatSourceType (value) {
@@ -408,7 +408,7 @@ export default {
           result += attr[i].key
           result += ':'
           result += attr[i].value
-          result += ''
+          result += ' '
         }
         return result
       }

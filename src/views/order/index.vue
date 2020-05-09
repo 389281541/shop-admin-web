@@ -226,12 +226,12 @@ export default {
       return formatDate(date, 'yyyy-MM-dd hh:mm:ss')
     },
     formatPayType (value) {
-      if (value === 1) {
+      if (value === 0) {
         return '支付宝'
-      } else if (value === 2) {
+      } else if (value === 1) {
         return '微信'
       } else {
-        return '未支付'
+        return '货到付款'
       }
     },
     formatStatus (value) {
@@ -334,10 +334,7 @@ export default {
         })
         return
       }
-      let params = new URLSearchParams()
-      params.append('ids', this.closeOrder.orderIds)
-      params.append('note', this.closeOrder.content)
-      closeOrder(params).then(response => {
+      closeOrder({'ids': this.closeOrder.orderIds, 'note': this.closeOrder.content}).then(response => {
         this.closeOrder.orderIds = []
         this.closeOrder.dialogVisible = false
         this.getList()
