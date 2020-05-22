@@ -21,7 +21,7 @@
 </template>
 
 <script>
-import {createSpecValue, updateSpecValue, getSpecValue} from '@/api/SpecValue'
+import {createSpecValue, updateSpecValue, getSpecValue} from '@/api/specValue'
 const defaultProductSpecValue = {
   specValue: '',
   sortId: null,
