@@ -70,7 +70,7 @@
 </template>
 
 <script>
-import {fetchSpecValueList, deleteSpecValue, upDownSpecValue} from '@/api/SpecValue'
+import {fetchSpecValueList, deleteSpecValue, upDownSpecValue} from '@/api/specValue'
 
 export default {
   name: 'SpecValue',
